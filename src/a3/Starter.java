@@ -26,6 +26,7 @@ import sage.texture.Texture;
 import sage.texture.TextureManager;
 import sage.scene.state.RenderState;
 import java.net.InetAddress;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 public class Starter extends BaseGame {
 
@@ -67,6 +68,7 @@ public class Starter extends BaseGame {
 
 	private Player player;
 	private HillHeightMap hills;
+	private JSHeightMap jshm;
 	private TerrainBlock terrain;
 	private SkyBox sky;
 	private GameClient client;
@@ -122,16 +124,6 @@ public class Starter extends BaseGame {
 		display = getDisplaySystem();
 		display.setTitle("Assignment #3");
 
-		/*JSEngine.getInst().execute("dostuff.js");
-		Object[][] test = (Object[][])JSEngine.getInst().getEngine().get("a");
-
-		for(int j = 0; j < test.length; j++){
-			for(int i = 0; i < test[j].length; i++){
-				System.out.print(test[j][i] + " ");
-			}
-			System.out.println();
-		}*/
-
 		rand = new Random();
 		client = null;
 
@@ -184,7 +176,10 @@ public class Starter extends BaseGame {
 		//Setup hills
 		hills = new HillHeightMap(129,2000,5.0f,20.0f,(byte)2,12345);
 		hills.setHeightScale(0.1f);
-		terrain = createTerBlock(hills);
+
+		jshm = new JSHeightMap("dostuff.js","a");
+
+		terrain = createTerBlock(jshm);
 
 		//Hills texture stuff
 		TextureState grassState;
