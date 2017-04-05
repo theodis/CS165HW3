@@ -142,4 +142,8 @@ public class Player {
 		return playerNode;
 	}
 
+	public Vector3D getPosition() {
+		return playerNode.getWorldTranslation().getCol(3);
+	}
+
 }

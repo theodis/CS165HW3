@@ -10,6 +10,7 @@ import sage.display.*;
 import sage.input.*;
 import sage.scene.*;
 import sage.event.*;
+import java.io.IOException;
 import sage.input.action.AbstractInputAction;
 import sage.scene.shape.*;
 import net.java.games.input.Component.Identifier;
@@ -24,6 +25,7 @@ import sage.scene.state.TextureState;
 import sage.texture.Texture;
 import sage.texture.TextureManager;
 import sage.scene.state.RenderState;
+import java.net.InetAddress;
 
 public class Starter extends BaseGame {
 
@@ -43,6 +45,7 @@ public class Starter extends BaseGame {
 
 	}
 
+	private static String[] args;
 	private static Starter inst;
 
 	public static Starter getInst() {
@@ -66,9 +69,11 @@ public class Starter extends BaseGame {
 	private HillHeightMap hills;
 	private TerrainBlock terrain;
 	private SkyBox sky;
+	private GameClient client;
 
 	public HillHeightMap getHills() { return hills; }
 	public TerrainBlock getTerrain() { return terrain; }
+	public Player getPlayer() { return player; }
 
 	private ArrayList<String> getInputByType(net.java.games.input.Controller.Type t){
 		ArrayList<String> ret = new ArrayList<String>();
@@ -78,6 +83,14 @@ public class Starter extends BaseGame {
 				ret.add(c.getName());
 
 		return ret;
+	}
+
+	public void removeObject(SceneNode sn) {
+		removeGameWorldObject(sn);
+	}
+
+	public void addObject(SceneNode sn) {
+		addGameWorldObject(sn);
 	}
 
 	protected void createDisplay() {
@@ -107,9 +120,17 @@ public class Starter extends BaseGame {
 		time = 0;
 
 		display = getDisplaySystem();
-		display.setTitle("Assignment #2");
+		display.setTitle("Assignment #3");
 
 		rand = new Random();
+		client = null;
+
+		try {
+			client = new GameClient(InetAddress.getByName(args[0]), Integer.parseInt(args[1]));
+			client.sendJoinMessage();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 
 		//Axis set up
 		Point3D origin = new Point3D(0,0,0);
@@ -200,6 +221,8 @@ public class Starter extends BaseGame {
 
 	public void update(float elapsedTime) {
 
+		if(client != null)
+			client.update(elapsedTime);
 		player.update(elapsedTime);
 		if(sky != null && player != null && player.getSceneNode() != null)
 			sky.setLocalTranslation(player.getSceneNode().getLocalTranslation());
@@ -214,6 +237,7 @@ public class Starter extends BaseGame {
 	}
 
 	public static void main (String[] args) {
+		Starter.args = args;
 		getInst().start();
 	}
 
