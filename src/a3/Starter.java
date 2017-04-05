@@ -190,11 +190,12 @@ public class Starter extends BaseGame {
 
 		//Skybox
 		sky = new SkyBox();
+		Texture sunTexture = TextureManager.loadTexture2D("sun.png");
 		Texture skyTexture = TextureManager.loadTexture2D("blue.png");
 		sky.setTexture(SkyBox.Face.Up, skyTexture);
 		sky.setTexture(SkyBox.Face.North, skyTexture);
 		sky.setTexture(SkyBox.Face.South, skyTexture);
-		sky.setTexture(SkyBox.Face.East, skyTexture);
+		sky.setTexture(SkyBox.Face.East, sunTexture);
 		sky.setTexture(SkyBox.Face.West, skyTexture);
 		sky.scale(60,60,60);
 		sky.setZBufferStateEnabled(false);
