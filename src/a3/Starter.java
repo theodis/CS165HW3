@@ -122,6 +122,16 @@ public class Starter extends BaseGame {
 		display = getDisplaySystem();
 		display.setTitle("Assignment #3");
 
+		/*JSEngine.getInst().execute("dostuff.js");
+		Object[][] test = (Object[][])JSEngine.getInst().getEngine().get("a");
+
+		for(int j = 0; j < test.length; j++){
+			for(int i = 0; i < test[j].length; i++){
+				System.out.print(test[j][i] + " ");
+			}
+			System.out.println();
+		}*/
+
 		rand = new Random();
 		client = null;
 
