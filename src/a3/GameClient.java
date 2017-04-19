@@ -27,7 +27,7 @@ public class GameClient extends GameConnectionClient {
 		if(messageTokens[0].compareTo("join")==0) {
 			if(messageTokens[1].compareTo("success") == 0) {
 				connected = true;
-				sendCreateMessage(game.getPlayer().getPosition());
+				sendCreateMessage();
 				timeSinceSend = 0;
 			} else {
 				//Silently fail for now.  FIXME!
@@ -48,7 +48,7 @@ public class GameClient extends GameConnectionClient {
 			Ghost g = new Ghost(x,y,z);
 			ghosts.put(ghostID, g);
 			game.addObject(g.getNode());
-			sendHiMessage(game.getPlayer().getPosition(), ghostID);
+			sendHiMessage(ghostID);
 		}
 		if(messageTokens[0].compareTo("hi") == 0) {
 			UUID ghostID = UUID.fromString(messageTokens[1]);
@@ -69,10 +69,17 @@ public class GameClient extends GameConnectionClient {
 		}
 	}
 
-	public void sendCreateMessage(Vector3D pos) {
+	public String positionString() {
+		Player p = Starter.getInst().getPlayer();
+		Tank t = p.getSceneNode();
+		Vector3D pos = p.getPosition();
+		return pos.getX() + "," + pos.getY() + "," + pos.getZ() + "," + t.getTopRotation() + "," + t.getTurretPitch();
+	}
+
+	public void sendCreateMessage() {
 		try {
 			String message = new String("create," + id.toString());
-			message += "," + pos.getX() + "," + pos.getY() + "," + pos.getZ();
+			message += "," + positionString();
 			System.out.println(message);
 			sendPacket(message);
 		} catch(IOException e) {
@@ -80,10 +87,10 @@ public class GameClient extends GameConnectionClient {
 		}
 	}
 
-	public void sendHiMessage(Vector3D pos, UUID destID) {
+	public void sendHiMessage(UUID destID) {
 		try {
 			String message = new String("hi," + id.toString() + "," + destID.toString());
-			message += "," + pos.getX() + "," + pos.getY() + "," + pos.getZ();
+			message += "," + positionString();
 			System.out.println(message);
 			sendPacket(message);
 		} catch(IOException e) {
@@ -93,10 +100,9 @@ public class GameClient extends GameConnectionClient {
 	}
 
 	public void sendMoveMessage() {
-		Vector3D pos = Starter.getInst().getPlayer().getPosition();
 		try {
 			String message = new String("move," + id.toString());
-			message += "," + pos.getX() + "," + pos.getY() + "," + pos.getZ();
+			message += "," + positionString();
 			if(!oldMessage.equals(message)){
 				System.out.println(message);
 				sendPacket(message);

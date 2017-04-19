@@ -114,4 +114,24 @@ public class Tank extends Group {
 		turretGroup.setLocalRotation(rot);
 
 	}
+
+	public float getTopRotation() { return topRotation; }
+	public float getTurretPitch() { return turretPitch; }
+
+	public void fire() {
+		Vector3D pos = turret.getWorldTranslation().getCol(3);
+		double alpha = ((360 - topRotation) * Math.PI) / 180;
+		double beta = (turretPitch * Math.PI) / 180;
+		double x = Math.cos(alpha) * Math.cos(beta);
+		double z = Math.sin(alpha) * Math.cos(beta);
+		double y = Math.sin(beta);
+		Vector3D vel = new Vector3D(x,y,z);
+		vel.scale(15);
+
+		//Move the bomb forward a bit
+		vel.scale(1/100.0);
+		pos = pos.add(vel);
+		vel.scale(100/1.0);
+		Starter.getInst().addBomb(pos,vel);
+	}
 }

@@ -73,6 +73,8 @@ public class Starter extends BaseGame {
 	private TerrainBlock terrain;
 	private SkyBox sky;
 	private GameClient client;
+	private ArrayList<Bomb> bombs;
+	private ArrayList<Bomb> removeBombs;
 
 	private Texture treeTexture;
 
@@ -80,6 +82,16 @@ public class Starter extends BaseGame {
 	public TerrainBlock getTerrain() { return terrain; }
 	public Player getPlayer() { return player; }
 
+	public void addBomb(Vector3D pos, Vector3D vel) {
+		Bomb b = new Bomb(pos,vel);
+		bombs.add(b);
+		addGameWorldObject(b);
+	}
+
+	public void removeBomb(Bomb b) {
+		removeBombs.add(b);
+		removeGameWorldObject(b);
+	}
 
 	private ArrayList<String> getInputByType(net.java.games.input.Controller.Type t){
 		ArrayList<String> ret = new ArrayList<String>();
@@ -106,7 +118,7 @@ public class Starter extends BaseGame {
 		int dim = tb.getSize();
 		if(x >= 0 && x < dim - 1 && z >= 0 && z < dim - 1){
 			mat.translate(x,
-				tb.getHeight(x,z) - 1,
+				tb.getHeight(x,z) - 1.5,
 				z);
 		}
 		tree.setLocalTranslation(mat);
@@ -240,6 +252,10 @@ public class Starter extends BaseGame {
 		for(int i = 0; i < 100; i++) 
 			addRandomTree();
 
+		//Setup bomb stuff
+		bombs = new ArrayList<Bomb>();
+		removeBombs = new ArrayList<Bomb>();
+
 		super.update(0.0f);
 	}
 
@@ -266,6 +282,13 @@ public class Starter extends BaseGame {
 		player.update(elapsedTime);
 		if(sky != null && player != null && player.getSceneNode() != null)
 			sky.setLocalTranslation(player.getSceneNode().getLocalTranslation());
+
+		for(Bomb b : removeBombs)
+			bombs.remove(b);
+		removeBombs.clear();
+
+		for(Bomb b : bombs)
+			b.update(elapsedTime);
 
 		time += elapsedTime;
 

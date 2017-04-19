@@ -118,6 +118,10 @@ public class Player {
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						playerNode.pitchTurret(event.getValue() * -time / 10);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+				input.associateAction(c, Identifier.Button.X, 
+					new AbstractInputAction(){public void performAction(float time, Event event) {
+						playerNode.fire();
+					}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 				/*input.associateAction(c, Identifier.Button._1, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						cameraController.adjustRadius(time / 40);
@@ -182,7 +186,7 @@ public class Player {
 		return camera;
 	}
 
-	public SceneNode getSceneNode() {
+	public Tank getSceneNode() {
 		return playerNode;
 	}
 
