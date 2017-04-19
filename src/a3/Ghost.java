@@ -2,14 +2,13 @@ package a3;
 
 import graphicslib3D.*;
 import sage.scene.SceneNode;
-import sage.scene.shape.Pyramid;
 
 public class Ghost {
 
-	public SceneNode node;
+	public Tank node;
 	
 	public Ghost(float x, float y, float z) {
-		node = new Pyramid();
+		node = new Tank();
 		move(x,y,z);
 	}
 
@@ -20,7 +19,7 @@ public class Ghost {
 		node.setLocalTranslation(mat);
 	}
 
-	public SceneNode getNode() {
+	public Tank getNode() {
 		return node;
 	}
 }

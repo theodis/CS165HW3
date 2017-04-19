@@ -133,5 +133,6 @@ public class Tank extends Group {
 		pos = pos.add(vel);
 		vel.scale(100/1.0);
 		Starter.getInst().addBomb(pos,vel);
+		Starter.getInst().getClient().sendFireMessage(pos,vel);
 	}
 }

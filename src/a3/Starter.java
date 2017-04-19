@@ -81,6 +81,7 @@ public class Starter extends BaseGame {
 	public HillHeightMap getHills() { return hills; }
 	public TerrainBlock getTerrain() { return terrain; }
 	public Player getPlayer() { return player; }
+	public GameClient getClient() { return client; }
 
 	public void addBomb(Vector3D pos, Vector3D vel) {
 		Bomb b = new Bomb(pos,vel);

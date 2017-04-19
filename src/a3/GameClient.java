@@ -45,7 +45,12 @@ public class GameClient extends GameConnectionClient {
 			float x = Float.parseFloat(messageTokens[2]);
 			float y = Float.parseFloat(messageTokens[3]);
 			float z = Float.parseFloat(messageTokens[4]);
+			float top = Float.parseFloat(messageTokens[5]);
+			float tur = Float.parseFloat(messageTokens[6]);
 			Ghost g = new Ghost(x,y,z);
+			Tank t = g.getNode();
+			t.setTopRotation(top);
+			t.setTurretPitch(tur);
 			ghosts.put(ghostID, g);
 			game.addObject(g.getNode());
 			sendHiMessage(ghostID);
@@ -55,7 +60,12 @@ public class GameClient extends GameConnectionClient {
 			float x = Float.parseFloat(messageTokens[2]);
 			float y = Float.parseFloat(messageTokens[3]);
 			float z = Float.parseFloat(messageTokens[4]);
+			float top = Float.parseFloat(messageTokens[5]);
+			float tur = Float.parseFloat(messageTokens[6]);
 			Ghost g = new Ghost(x,y,z);
+			Tank t = g.getNode();
+			t.setTopRotation(top);
+			t.setTurretPitch(tur);
 			ghosts.put(ghostID, g);
 			game.addObject(g.getNode());
 		}
@@ -64,8 +74,28 @@ public class GameClient extends GameConnectionClient {
 			float x = Float.parseFloat(messageTokens[2]);
 			float y = Float.parseFloat(messageTokens[3]);
 			float z = Float.parseFloat(messageTokens[4]);
-			if(ghosts.containsKey(ghostID))
-				ghosts.get(ghostID).move(x,y,z);
+			float top = Float.parseFloat(messageTokens[5]);
+			float tur = Float.parseFloat(messageTokens[6]);
+			if(ghosts.containsKey(ghostID)){
+				Ghost g = ghosts.get(ghostID);
+				g.move(x,y,z);
+				Tank t = g.getNode();
+				t.setTopRotation(top);
+				t.setTurretPitch(tur);
+
+			}
+		}
+		if(messageTokens[0].compareTo("fire") == 0) {
+			UUID ghostID = UUID.fromString(messageTokens[1]);
+			float px = Float.parseFloat(messageTokens[2]);
+			float py = Float.parseFloat(messageTokens[3]);
+			float pz = Float.parseFloat(messageTokens[4]);
+			float vx = Float.parseFloat(messageTokens[5]);
+			float vy = Float.parseFloat(messageTokens[6]);
+			float vz = Float.parseFloat(messageTokens[7]);
+			if(ghosts.containsKey(ghostID)){
+				game.addBomb(new Vector3D(px,py,pz), new Vector3D(vx,vy,vz));
+			}
 		}
 	}
 
@@ -121,6 +151,19 @@ public class GameClient extends GameConnectionClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void sendFireMessage(Vector3D pos, Vector3D vel) {
+		try {
+			String message = new String("fire," + id.toString());
+			message += "," + pos.getX() + "," + pos.getY() + "," + pos.getZ();
+			message += "," + vel.getX() + "," + vel.getY() + "," + vel.getZ();
+			System.out.println(message);
+			sendPacket(message);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public void update(float elapsed) {
