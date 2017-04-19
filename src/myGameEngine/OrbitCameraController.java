@@ -44,7 +44,7 @@ public class OrbitCameraController extends AbstractCameraController {
 	public void adjustRadius(float amount){
 		radius += amount;
 		if(radius < 3.0f) radius = 3.0f;
-		if(radius > 20.f) radius = 20.f;
+		if(radius > 100.f) radius = 100.f;
 	}
 
 	public void setRadius(float amount){

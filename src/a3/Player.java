@@ -46,7 +46,7 @@ public class Player {
 		cameraController.setTarget(playerNode);
 
 		//Set up input controller
-		//inputController = new InputController(Starter.getInst().getInputManager(), camera, 50);
+		inputController = new InputController(Starter.getInst().getInputManager(), camera, 50);
 		//inputController.addControlledNode(playerNode);
 		
 		//Set up HUD strings
@@ -55,12 +55,12 @@ public class Player {
 		camera.addToHUD(scoreString);
 
 		//Bind movement inputs
-		/*for(net.java.games.input.Controller c : input.getControllers()){
+		for(net.java.games.input.Controller c : input.getControllers()){
 			if(c.getType() == net.java.games.input.Controller.Type.GAMEPAD)
 				inputController.bindToController(c);
 			if(c.getType() == net.java.games.input.Controller.Type.KEYBOARD)
 				inputController.bindToController(c);
-		}*/
+		}
 
 		//Bind camera inputs
 		for(net.java.games.input.Controller c : input.getControllers()){
@@ -173,7 +173,7 @@ public class Player {
 	}
 
 	public void update(float elapsedTime) {
-		//inputController.update(elapsedTime);
+		inputController.update(elapsedTime);
 		updateHeight();
 		cameraController.update(elapsedTime);
 	}

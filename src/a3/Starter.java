@@ -27,6 +27,7 @@ import sage.texture.TextureManager;
 import sage.scene.state.RenderState;
 import java.net.InetAddress;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import sage.model.loader.OBJLoader;
 
 public class Starter extends BaseGame {
 
@@ -73,9 +74,12 @@ public class Starter extends BaseGame {
 	private SkyBox sky;
 	private GameClient client;
 
+	private Texture treeTexture;
+
 	public HillHeightMap getHills() { return hills; }
 	public TerrainBlock getTerrain() { return terrain; }
 	public Player getPlayer() { return player; }
+
 
 	private ArrayList<String> getInputByType(net.java.games.input.Controller.Type t){
 		ArrayList<String> ret = new ArrayList<String>();
@@ -85,6 +89,31 @@ public class Starter extends BaseGame {
 				ret.add(c.getName());
 
 		return ret;
+	}
+
+	private void addRandomTree() {
+
+		OBJLoader loader = new OBJLoader();
+		TriMesh tree = loader.loadModel("tree.obj");
+		tree.setTexture(treeTexture);
+		float s = (float)(Math.random() * 0.1 + 0.2);
+		float x = (float)(Math.random() * 128);
+		float z = (float)(Math.random() * 128);
+
+		Matrix3D scale = tree.getLocalScale();
+		Matrix3D mat = new Matrix3D();
+		TerrainBlock tb = getTerrain();
+		int dim = tb.getSize();
+		if(x >= 0 && x < dim - 1 && z >= 0 && z < dim - 1){
+			mat.translate(x,
+				tb.getHeight(x,z) - 1,
+				z);
+		}
+		tree.setLocalTranslation(mat);
+		scale.scale(s,s,s);
+
+		addGameWorldObject(tree);
+
 	}
 
 	public void removeObject(SceneNode sn) {
@@ -205,6 +234,11 @@ public class Starter extends BaseGame {
 		sky.scale(60,60,60);
 		sky.setZBufferStateEnabled(false);
 		addGameWorldObject(sky);
+
+		//Add trees
+		treeTexture = TextureManager.loadTexture2D("tree.png");
+		for(int i = 0; i < 100; i++) 
+			addRandomTree();
 
 		super.update(0.0f);
 	}

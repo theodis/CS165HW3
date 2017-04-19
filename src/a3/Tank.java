@@ -52,7 +52,7 @@ public class Tank extends Group {
 		addChild(base);
 		addChild(topGroup);
 
-		scale(0.5f,0.5f,0.5f);
+		scale(0.2f,0.2f,0.2f);
 	}
 
 	private Vector<SceneNode> getChildRecursive(Group g) {
