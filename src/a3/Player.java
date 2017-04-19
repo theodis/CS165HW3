@@ -122,6 +122,10 @@ public class Player {
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						playerNode.fire();
 					}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+				input.associateAction(c, Identifier.Button._3, 
+					new AbstractInputAction(){public void performAction(float time, Event event) {
+						playerNode.fire();
+					}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 				/*input.associateAction(c, Identifier.Button._1, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						cameraController.adjustRadius(time / 40);
