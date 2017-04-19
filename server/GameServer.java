@@ -69,6 +69,15 @@ public class GameServer extends GameConnectionServer<UUID> {
 				sendMoveMessages(clientID, pos);
 			}
 		}
+
+		if(msgTokens[0].compareTo("fire") == 0) {
+			if(msgTokens[0].compareTo("fire") == 0) {
+				//format: move,localid,x,y,z
+				UUID clientID = UUID.fromString(msgTokens[1]);
+				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7]};
+				sendFireMessages(clientID, pos);
+			}
+		}
 	}
 
 	public void sendJoinedMessage(UUID clientID, boolean success) {
@@ -121,6 +130,22 @@ public class GameServer extends GameConnectionServer<UUID> {
 			message += "," + position[2];
 			message += "," + position[3];
 			message += "," + position[4];
+			System.out.println(message);
+			forwardPacketToAll(message, clientID);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendFireMessages(UUID clientID, String[] position) {
+		try {
+			String message = new String("fire," + clientID.toString());
+			message += "," + position[0];
+			message += "," + position[1];
+			message += "," + position[2];
+			message += "," + position[3];
+			message += "," + position[4];
+			message += "," + position[5];
 			System.out.println(message);
 			forwardPacketToAll(message, clientID);
 		} catch (IOException e) {
