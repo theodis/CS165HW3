@@ -177,9 +177,9 @@ public class Starter extends BaseGame {
 		hills = new HillHeightMap(129,2000,5.0f,20.0f,(byte)2,12345);
 		hills.setHeightScale(0.1f);
 
-		jshm = new JSHeightMap("dostuff.js","a");
+		//jshm = new JSHeightMap("dostuff.js","a");
 
-		terrain = createTerBlock(jshm);
+		terrain = createTerBlock(hills);
 
 		//Hills texture stuff
 		TextureState grassState;

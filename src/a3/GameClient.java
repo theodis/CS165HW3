@@ -12,6 +12,7 @@ public class GameClient extends GameConnectionClient {
 	private float timeSinceSend;
 	private HashMap<UUID, Ghost> ghosts;
 	private boolean connected;
+	private String oldMessage = "";
 
 	public GameClient(InetAddress remAddr, int remPort) throws IOException {
 		super(remAddr, remPort, ProtocolType.TCP);
@@ -96,8 +97,11 @@ public class GameClient extends GameConnectionClient {
 		try {
 			String message = new String("move," + id.toString());
 			message += "," + pos.getX() + "," + pos.getY() + "," + pos.getZ();
-			System.out.println(message);
-			sendPacket(message);
+			if(!oldMessage.equals(message)){
+				System.out.println(message);
+				sendPacket(message);
+				oldMessage = message;
+			}
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
