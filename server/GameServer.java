@@ -43,6 +43,20 @@ public class GameServer extends GameConnectionServer<UUID> {
 		String message = (String) o;
 		String[] msgTokens = message.split(",");
 		System.out.println(message);
+
+		ArrayList<UUID> remove = new ArrayList<UUID>();
+		long curTime = getTime();
+		for(UUID clientID : timeSincePing.keySet())
+			if(getTime() - timeSincePing.get(clientID) > 5000)
+				remove.add(clientID);
+
+		//Drop clients that haven't sent a ping in 5 seconds
+		for(UUID clientID : remove) {
+			removeClient(clientID);
+			timeSincePing.remove(clientID);
+			System.out.println("Removed client " + clientID + " due to inactivity.");
+		}
+
 		if(msgTokens.length > 0) {
 			if(msgTokens[0].compareTo("bye") == 0) {
 				//format: bye,localid
