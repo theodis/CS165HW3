@@ -122,8 +122,8 @@ public class Tank extends Group {
 
 	public void setShootPower(float power) {
 		shootPower = power;
-		if(shootPower < 2.0f) shootPower = 2.0f;
-		if(shootPower > 20.0f) shootPower = 20.0f;
+		if(shootPower < 6.0f) shootPower = 6.0f;
+		if(shootPower > 30.0f) shootPower = 30.0f;
 	}
 
 	public float getTopRotation() { return topRotation; }
