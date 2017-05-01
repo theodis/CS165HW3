@@ -75,6 +75,8 @@ public class Starter extends BaseGame {
 	private GameClient client;
 	private ArrayList<Bomb> bombs;
 	private ArrayList<Bomb> removeBombs;
+	private ArrayList<Line> firePredict;
+	private ArrayList<Line> firePredictShadow;
 
 	private Texture treeTexture;
 
@@ -175,6 +177,9 @@ public class Starter extends BaseGame {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
+
+		firePredict = new ArrayList<Line>();
+		firePredictShadow = new ArrayList<Line>();
 
 		//Axis set up
 		Point3D origin = new Point3D(0,0,0);
@@ -296,9 +301,48 @@ public class Starter extends BaseGame {
 		for(Bomb b : bombs)
 			b.update(elapsedTime);
 
+		//Show fire prediction
+		for(Line l : firePredict)
+			removeGameWorldObject(l);
+		firePredict.clear();
+		for(Line l : firePredictShadow)
+			removeGameWorldObject(l);
+		firePredictShadow.clear();
+
+		Point3D[] points = getPlayer().getSceneNode().predictPath((int)(getPlayer().getSceneNode().getShootPower() / 12) + 20 ,50);
+		for(int i = 0; i < points.length - 1; i++){
+			Point3D shadowA = new Point3D(
+				points[i].getX(),
+				getHeightAt((float)points[i].getX(), (float)points[i].getZ()),
+				points[i].getZ());
+			Point3D shadowB = new Point3D(
+				points[i + 1].getX(),
+				getHeightAt((float)points[i + 1].getX(), (float)points[i + 1].getZ()),
+				points[i + 1].getZ());
+
+			firePredict.add(new Line(points[i], points[i + 1],  Color.RED, 1));
+			firePredictShadow.add(new Line(shadowA, shadowB,  Color.BLACK, 1));
+		}
+
+		for(Line l : firePredict)
+			addGameWorldObject(l);
+		for(Line l : firePredictShadow)
+			addGameWorldObject(l);
+
 		time += elapsedTime;
 
 		super.update(elapsedTime);
+	}
+
+	public float getHeightAt(float x, float z) {
+		TerrainBlock tb = getTerrain();
+		int dim = tb.getSize();
+		float ret = 0;
+		if(x >= 0 && x < dim - 1 && z >= 0 && z < dim - 1){
+			ret = tb.getHeight(x,z) - 1.5f;
+		} 
+		
+		return ret;
 	}
 
 	protected void shutdown() {

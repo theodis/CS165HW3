@@ -195,11 +195,7 @@ public class Player {
 		int dim = tb.getSize();
 		float x = (float)vec.getX();
 		float z = (float)vec.getZ();
-		if(x >= 0 && x < dim - 1 && z >= 0 && z < dim - 1){
-			mat.translate(0,
-				tb.getHeight(x,z) - 1,
-				0);
-		}
+		mat.translate(0, Starter.getInst().getHeightAt(x,z), 0);
 		playerNode.setLocalTranslation(mat);
 
 	}

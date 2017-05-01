@@ -130,7 +130,29 @@ public class Tank extends Group {
 	public float getTurretPitch() { return turretPitch; }
 	public float getShootPower() { return shootPower; }
 
-	public void fire() {
+	public Point3D[] predictPath(int ticks, float tickLength){
+		Point3D[] ret = new Point3D[ticks + 1];
+		Vector3D[] posVel = getFirePosAndVel();
+		Vector3D pos = posVel[0];
+		Vector3D vel = posVel[1];
+
+		ret[0] = new Point3D(pos);
+		for(int i = 1; i <= ticks; i++){
+			double y = vel.getY();
+			y -= tickLength / 200.0f;
+			vel.setY(y);
+
+			Vector3D scaled = new Vector3D(vel.getX(), vel.getY(), vel.getZ());
+			scaled.scale(tickLength/1000);
+			pos = pos.add(scaled);
+			ret[i] = new Point3D(pos);
+		}
+
+		return ret;
+	}
+
+	private Vector3D[] getFirePosAndVel() { 
+		Vector3D[] ret = new Vector3D[2];
 		Vector3D pos = turret.getWorldTranslation().getCol(3);
 		double alpha = ((360 - topRotation) * Math.PI) / 180;
 		double beta = (turretPitch * Math.PI) / 180;
@@ -144,7 +166,16 @@ public class Tank extends Group {
 		vel.scale(1/100.0);
 		pos = pos.add(vel);
 		vel.scale(100/1.0);
-		Starter.getInst().addBomb(pos,vel);
-		Starter.getInst().getClient().sendFireMessage(pos,vel);
+
+		ret[0] = pos;
+		ret[1] = vel;
+
+		return ret;
+	}
+
+	public void fire() {
+		Vector3D[] posAndVel = getFirePosAndVel();
+		Starter.getInst().addBomb(posAndVel[0],posAndVel[1]);
+		Starter.getInst().getClient().sendFireMessage(posAndVel[0],posAndVel[1]);
 	}
 }
