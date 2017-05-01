@@ -1,17 +1,27 @@
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.UUID;
+import java.util.*;
 
 import sage.networking.server.GameConnectionServer;
 import sage.networking.server.IClientInfo;
 
 public class GameServer extends GameConnectionServer<UUID> {
+
+	private static HashMap<UUID, Long> timeSincePing;
+
+	private static long getTime() {
+		Date d = new Date();
+		return d.getTime();
+	}
+
 	public static void main(String[] args) throws IOException {
 		new GameServer(Integer.parseInt(args[0]));
 	}
 
 	public GameServer(int localPort) throws IOException{
 		super(localPort, ProtocolType.TCP);
+		timeSincePing = new HashMap<UUID, Long>();
 	}
 
 	public void acceptClient(IClientInfo ci, Object o) {
@@ -23,6 +33,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			if(messageTokens[0].compareTo("join") == 0) {
 				UUID clientID = UUID.fromString(messageTokens[1]);
 				addClient(ci, clientID);
+				timeSincePing.put(clientID, getTime());
 				sendJoinedMessage(clientID, true);
 			}
 		}
@@ -39,9 +50,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 				sendByeMessages(clientID);
 				removeClient(clientID);
 			}
-		}
 
-		if(msgTokens[0].compareTo("hi") == 0) {
 			if(msgTokens[0].compareTo("hi") == 0) {
 				//format: hi,localid,destid,x,y,z
 				UUID localID = UUID.fromString(msgTokens[1]);
@@ -49,33 +58,32 @@ public class GameServer extends GameConnectionServer<UUID> {
 				String[] pos = {msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7]};
 				sendHiMessages(localID,destinationID, pos);
 			}
-		}
 
-
-		if(msgTokens[0].compareTo("create") == 0) {
 			if(msgTokens[0].compareTo("create") == 0) {
 				//format: create,localid,x,y,z
 				UUID clientID = UUID.fromString(msgTokens[1]);
 				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6]};
 				sendCreateMessages(clientID, pos);
 			}
-		}
 
-		if(msgTokens[0].compareTo("move") == 0) {
 			if(msgTokens[0].compareTo("move") == 0) {
 				//format: move,localid,x,y,z
 				UUID clientID = UUID.fromString(msgTokens[1]);
 				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6]};
 				sendMoveMessages(clientID, pos);
 			}
-		}
 
-		if(msgTokens[0].compareTo("fire") == 0) {
 			if(msgTokens[0].compareTo("fire") == 0) {
 				//format: move,localid,x,y,z
 				UUID clientID = UUID.fromString(msgTokens[1]);
 				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7]};
 				sendFireMessages(clientID, pos);
+			}
+
+			if(msgTokens[0].compareTo("ping") == 0) {
+				//format: ping,localid,x
+				UUID clientID = UUID.fromString(msgTokens[1]);
+				timeSincePing.put(clientID, getTime());
 			}
 		}
 	}
