@@ -20,7 +20,18 @@ public class GameServer extends GameConnectionServer<UUID> {
 		(new GameServer(Integer.parseInt(args[0]))).loop();
 	}
 
-	public  void loop() {
+	public void resetGame() {
+		System.out.println("Resetting game");
+	}
+
+	public void firstPlayer(UUID clientID) {
+		System.out.println("First player joined");
+	}
+
+	public void loop() {
+
+		resetGame();
+
 		while(true) {
 
 			ArrayList<UUID> remove = new ArrayList<UUID>();
@@ -31,9 +42,14 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 			//Drop clients that haven't sent a ping in 5 seconds
 			for(UUID clientID : remove) {
+				sendByeMessages(clientID);
 				removeClient(clientID);
 				timeSincePing.remove(clientID);
 				System.out.println("Removed client " + clientID + " due to inactivity.");
+			}
+
+			if(timeSincePing.size() == 0 && remove.size() > 0) {
+				resetGame();
 			}
 			try{
 				Thread.sleep(100);
@@ -59,6 +75,8 @@ public class GameServer extends GameConnectionServer<UUID> {
 				addClient(ci, clientID);
 				timeSincePing.put(clientID, getTime());
 				sendJoinedMessage(clientID, true);
+				if(timeSincePing.size() == 1)
+					firstPlayer(clientID);
 			}
 		}
 	}
