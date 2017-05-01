@@ -10,6 +10,7 @@ import sage.networking.IGameConnection.ProtocolType;
 public class GameClient extends GameConnectionClient {
 	private UUID id;
 	private float timeSinceSend;
+	private float timeSincePing;
 	private HashMap<UUID, Ghost> ghosts;
 	private boolean connected;
 	private String oldMessage = "";
@@ -29,6 +30,7 @@ public class GameClient extends GameConnectionClient {
 				connected = true;
 				sendCreateMessage();
 				timeSinceSend = 0;
+				timeSincePing = 0;
 			} else {
 				//Silently fail for now.  FIXME!
 			}
@@ -166,6 +168,18 @@ public class GameClient extends GameConnectionClient {
 
 	}
 
+	public void sendPingMessage() {
+		try {
+			String message = new String("ping," + id.toString());
+			System.out.println(message);
+			sendPacket(message);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+
+
+	}
+
 	public void update(float elapsed) {
 		processPackets();
 		if(connected){
@@ -174,6 +188,14 @@ public class GameClient extends GameConnectionClient {
 				sendMoveMessage();
 				timeSinceSend = 0;
 			}
+
+			//Ping every second
+			timeSincePing += elapsed;
+			if(timeSincePing > 1000) {
+				sendPingMessage();
+				timeSincePing = 0;
+			}
+
 		}
 	}
 }
