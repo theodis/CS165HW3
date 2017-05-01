@@ -26,7 +26,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			ArrayList<UUID> remove = new ArrayList<UUID>();
 			long curTime = getTime();
 			for(UUID clientID : timeSincePing.keySet())
-				if(getTime() - timeSincePing.get(clientID) > 5000)
+				if(getTime() - timeSincePing.get(clientID) > 3000)
 					remove.add(clientID);
 
 			//Drop clients that haven't sent a ping in 5 seconds
