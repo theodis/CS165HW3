@@ -23,6 +23,9 @@ public class Player {
 	private Tank playerNode;
 	private ICamera camera;
 	private OrbitCameraController cameraController;
+	private HUDString bearingString;
+	private HUDString pitchString;
+	private HUDString powerString;
 	private HUDString scoreString;
 	private InputController inputController;
 
@@ -50,8 +53,14 @@ public class Player {
 		//inputController.addControlledNode(playerNode);
 		
 		//Set up HUD strings
+		bearingString = new HUDString ("Bearing = " + playerNode.getTopRotation());
+		pitchString = new HUDString ("Pitch = " + playerNode.getTurretPitch());
+		powerString = new HUDString ("Power = " + playerNode.getShootPower());
 		scoreString = new HUDString ("Score = " + score);
 
+		camera.addToHUD(bearingString);
+		camera.addToHUD(pitchString);
+		camera.addToHUD(powerString);
 		camera.addToHUD(scoreString);
 
 		//Bind movement inputs
@@ -162,13 +171,15 @@ public class Player {
 			}*/
 		}
 
+		updateViewPort();
+
 	}
 
 	public void updateViewPort() {
 		int width = Starter.getInst().getDisplaySystem().getWidth();
 		int height = Starter.getInst().getDisplaySystem().getHeight();
 
-		camera.setPerspectiveFrustum(60, (double)width / (double)height, 1, 1000);
+		camera.setPerspectiveFrustum(60, (double)width / (double)height, 1.0, 1000.0);
 	}
 
 	public void updateHeight() {
@@ -191,6 +202,10 @@ public class Player {
 	}
 
 	public void update(float elapsedTime) {
+		bearingString.setText("Bearing = " + playerNode.getTopRotation());
+		pitchString.setText("Pitch = " + playerNode.getTurretPitch());
+		powerString.setText("Power = " + playerNode.getShootPower());
+		scoreString.setText("Score = " + score);
 		inputController.update(elapsedTime);
 		updateHeight();
 		cameraController.update(elapsedTime);

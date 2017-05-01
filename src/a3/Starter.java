@@ -240,11 +240,12 @@ public class Starter extends BaseGame {
 		Texture sunTexture = TextureManager.loadTexture2D("sun.png");
 		Texture skyTexture = TextureManager.loadTexture2D("blue.png");
 		sky.setTexture(SkyBox.Face.Up, skyTexture);
+		sky.setTexture(SkyBox.Face.Down, grassTexture);
 		sky.setTexture(SkyBox.Face.North, skyTexture);
 		sky.setTexture(SkyBox.Face.South, skyTexture);
 		sky.setTexture(SkyBox.Face.East, sunTexture);
 		sky.setTexture(SkyBox.Face.West, skyTexture);
-		sky.scale(60,60,60);
+		sky.scale(500,500,500);
 		sky.setZBufferStateEnabled(false);
 		addGameWorldObject(sky);
 
@@ -281,8 +282,12 @@ public class Starter extends BaseGame {
 		if(client != null)
 			client.update(elapsedTime);
 		player.update(elapsedTime);
-		if(sky != null && player != null && player.getSceneNode() != null)
-			sky.setLocalTranslation(player.getSceneNode().getLocalTranslation());
+		if(sky != null && player != null && player.getSceneNode() != null) {
+			Point3D loc = player.getCamera().getLocation();
+			Matrix3D mat = new Matrix3D();
+			mat.translate(loc.getX(), 490, loc.getZ());
+			sky.setLocalTranslation(mat);
+		}
 
 		for(Bomb b : removeBombs)
 			bombs.remove(b);
