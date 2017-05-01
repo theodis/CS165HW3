@@ -65,6 +65,16 @@ public class Player {
 		//Bind camera inputs
 		for(net.java.games.input.Controller c : input.getControllers()){
 			if(c.getType() == net.java.games.input.Controller.Type.GAMEPAD){
+				input.associateAction(c, Identifier.Axis.Z, 
+					new AbstractInputAction(){public void performAction(float time, Event event) {
+						playerNode.adjustPower( (event.getValue() + 1.0f) * time / 250);
+						if(event.getValue() != -1.0f) System.out.println(playerNode.getShootPower());
+					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+				input.associateAction(c, Identifier.Axis.RZ, 
+					new AbstractInputAction(){public void performAction(float time, Event event) {
+						playerNode.adjustPower( -1 * (event.getValue() + 1.0f) * time / 250);
+						if(event.getValue() != -1.0f) System.out.println(playerNode.getShootPower());
+					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				input.associateAction(c, Identifier.Axis.RX, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						cameraController.Rotate(-1 * event.getValue() * time / 1000);
@@ -90,7 +100,7 @@ public class Player {
 						cameraController.adjustRadius(time / -40);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 			}
-			if(c.getType() == net.java.games.input.Controller.Type.MOUSE){
+/*			if(c.getType() == net.java.games.input.Controller.Type.MOUSE){
 				input.associateAction(c, Identifier.Axis.X, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						cameraController.Rotate(-1 * event.getValue() * time / 1000);
@@ -104,7 +114,7 @@ public class Player {
 						cameraController.adjustRadius(event.getValue() * time / 10);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 
-			}
+			}*/
 		}
 
 		//Bind turret controls
