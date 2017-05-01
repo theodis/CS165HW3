@@ -53,10 +53,15 @@ public class Player {
 		//inputController.addControlledNode(playerNode);
 		
 		//Set up HUD strings
-		bearingString = new HUDString ("Bearing = " + playerNode.getTopRotation());
-		pitchString = new HUDString ("Pitch = " + playerNode.getTurretPitch());
-		powerString = new HUDString ("Power = " + playerNode.getShootPower());
+		bearingString = new HUDString ("Bearing = " + Math.round(playerNode.getTopRotation() * 10) / 10);
+		pitchString = new HUDString ("Pitch = " + Math.round(playerNode.getTurretPitch() * 10) / 10);
+		powerString = new HUDString ("Power = " + Math.round(playerNode.getShootPower() * 10) / 10);
 		scoreString = new HUDString ("Score = " + score);
+
+		bearingString.setLocation(0.01,0.16);
+		pitchString.setLocation(0.01,0.11);
+		powerString.setLocation(0.01,0.06);
+		scoreString.setLocation(0.01,0.01);
 
 		camera.addToHUD(bearingString);
 		camera.addToHUD(pitchString);
@@ -77,12 +82,10 @@ public class Player {
 				input.associateAction(c, Identifier.Axis.Z, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						playerNode.adjustPower( (event.getValue() + 1.0f) * time / 250);
-						if(event.getValue() != -1.0f) System.out.println(playerNode.getShootPower());
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				input.associateAction(c, Identifier.Axis.RZ, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						playerNode.adjustPower( -1 * (event.getValue() + 1.0f) * time / 250);
-						if(event.getValue() != -1.0f) System.out.println(playerNode.getShootPower());
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				input.associateAction(c, Identifier.Axis.RX, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
@@ -202,9 +205,9 @@ public class Player {
 	}
 
 	public void update(float elapsedTime) {
-		bearingString.setText("Bearing = " + playerNode.getTopRotation());
-		pitchString.setText("Pitch = " + playerNode.getTurretPitch());
-		powerString.setText("Power = " + playerNode.getShootPower());
+		bearingString.setText("Bearing = " + (Math.round(playerNode.getTopRotation() * 10) / 10.0));
+		pitchString.setText("Pitch = " + (Math.round(playerNode.getTurretPitch() * 10) / 10.0));
+		powerString.setText("Power = " + (Math.round(playerNode.getShootPower() * 10) / 10.0));
 		scoreString.setText("Score = " + score);
 		inputController.update(elapsedTime);
 		updateHeight();
