@@ -15,8 +15,9 @@ public class Tank extends Group {
 	public Cube top;
 	public Cylinder turret;
 
-	public float topRotation;
-	public float turretPitch;
+	public float topRotation = 0.0f;
+	public float turretPitch = 0.0f;
+	public float shootPower = 15.0f;
 
 	public Tank() {
 		topGroup = new Group();
@@ -115,8 +116,19 @@ public class Tank extends Group {
 
 	}
 
+	public void adjustPower(float power) {
+		setShootPower(shootPower + power);
+	}
+
+	public void setShootPower(float power) {
+		shootPower = power;
+		if(shootPower < 2.0f) shootPower = 2.0f;
+		if(shootPower > 20.0f) shootPower = 20.0f;
+	}
+
 	public float getTopRotation() { return topRotation; }
 	public float getTurretPitch() { return turretPitch; }
+	public float getShootPower() { return shootPower; }
 
 	public void fire() {
 		Vector3D pos = turret.getWorldTranslation().getCol(3);
@@ -126,7 +138,7 @@ public class Tank extends Group {
 		double z = Math.sin(alpha) * Math.cos(beta);
 		double y = Math.sin(beta);
 		Vector3D vel = new Vector3D(x,y,z);
-		vel.scale(15);
+		vel.scale(shootPower);
 
 		//Move the bomb forward a bit
 		vel.scale(1/100.0);
