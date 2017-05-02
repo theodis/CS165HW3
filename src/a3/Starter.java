@@ -309,7 +309,7 @@ public class Starter extends BaseGame {
 			removeGameWorldObject(l);
 		firePredictShadow.clear();
 
-		Point3D[] points = getPlayer().getSceneNode().predictPath((int)(getPlayer().getSceneNode().getShootPower() / 12) + 20 ,50);
+		Point3D[] points = getPlayer().getSceneNode().predictPath((int)(getPlayer().getSceneNode().getShootPower() / 12) + 10 ,100);
 		for(int i = 0; i < points.length - 1; i++){
 			Point3D shadowA = new Point3D(
 				points[i].getX(),
