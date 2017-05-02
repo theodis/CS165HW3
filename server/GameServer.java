@@ -7,9 +7,39 @@ import java.lang.Thread;
 import sage.networking.server.GameConnectionServer;
 import sage.networking.server.IClientInfo;
 
+import graphicslib3D.*;
+
 public class GameServer extends GameConnectionServer<UUID> {
 
-	private static HashMap<UUID, Long> timeSincePing;
+	public class AITank {
+		private UUID id;
+		private float bearing;
+		private float pitch;
+		private float x;
+		private float y;
+		private float z;
+
+		private float lastBearing;
+		private float lastPitch;
+
+		private float hitX;
+		private float hitY;
+		private float hitZ;
+
+		public AITank(GameServer g){
+			id = UUID.randomUUID();
+			x = (float)Math.random() * 128;
+			y = 0; //FIXME: Pull from heightmap
+			z = (float)Math.random() * 128;
+
+			lastBearing = lastPitch = -1;
+		}
+	}
+
+	private int hillsSeed;
+	private HashMap<UUID, Long> timeSincePing;
+	private HashMap<UUID, Point3D> positions;
+	private ArrayList<AITank> aitanks;
 
 	private static long getTime() {
 		Date d = new Date();
@@ -26,6 +56,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 	public void firstPlayer(UUID clientID) {
 		System.out.println("First player joined");
+		aitanks = new ArrayList<AITank>();
+		aitanks.add(new AITank(this));
+		aitanks.add(new AITank(this));
 	}
 
 	public void loop() {
