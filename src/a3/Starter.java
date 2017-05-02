@@ -28,6 +28,8 @@ import sage.scene.state.RenderState;
 import java.net.InetAddress;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import sage.model.loader.OBJLoader;
+import sage.audio.*;
+import com.jogamp.openal.ALFactory;
 
 public class Starter extends BaseGame {
 
@@ -77,8 +79,10 @@ public class Starter extends BaseGame {
 	private ArrayList<Bomb> removeBombs;
 	private ArrayList<Line> firePredict;
 	private ArrayList<Line> firePredictShadow;
-
 	private Texture treeTexture;
+	private IAudioManager audioManager;
+	private AudioResource shotSound, boomSound;
+	private ArrayList<Sound> runningSounds;
 
 	public HillHeightMap getHills() { return hills; }
 	public TerrainBlock getTerrain() { return terrain; }
@@ -86,6 +90,7 @@ public class Starter extends BaseGame {
 	public GameClient getClient() { return client; }
 
 	public void addBomb(Vector3D pos, Vector3D vel) {
+		playShot(new Point3D(pos));
 		Bomb b = new Bomb(pos,vel);
 		bombs.add(b);
 		addGameWorldObject(b);
@@ -263,7 +268,48 @@ public class Starter extends BaseGame {
 		bombs = new ArrayList<Bomb>();
 		removeBombs = new ArrayList<Bomb>();
 
+		//Audio initialization
+		runningSounds = new ArrayList<Sound>();
+		audioManager = AudioManagerFactory.createAudioManager("sage.audio.joal.JOALAudioManager");
+		if(!audioManager.initialize())
+			System.out.println("Failed to initialize audio");
+		shotSound = audioManager.createAudioResource("shot.wav", AudioResourceType.AUDIO_SAMPLE);
+		boomSound = audioManager.createAudioResource("boom.wav", AudioResourceType.AUDIO_SAMPLE);
+		audioManager.getEar().setLocation(player.getCamera().getLocation());
+		audioManager.getEar().setOrientation(player.getCamera().getViewDirection(), new Vector3D(0,1,0));
+		updateEar();
+
 		super.update(0.0f);
+	}
+
+	private void updateEar(){
+		//System.out.println(player.getCamera().getLocation());
+		audioManager.getEar().setLocation(player.getCamera().getLocation());
+		audioManager.getEar().setOrientation(player.getCamera().getViewDirection(), new Vector3D(0,1,0));
+	}
+
+	
+	private Sound makeSound(AudioResource r, Point3D pos, int volume){
+		Sound ret = new Sound(r, SoundType.SOUND_EFFECT, volume, false);
+		ret.initialize(audioManager);
+		ret.setMaxDistance(1000.0f);
+		ret.setMinDistance(10.0f);
+		ret.setRollOff(0.33f);
+		return ret;
+	}
+	private void playShot(Point3D loc){
+		System.out.println(player.getCamera().getLocation());
+		System.out.println(loc);
+		Sound s = makeSound(shotSound, loc, 100);
+		runningSounds.add(s);
+		s.play();
+	}
+
+	private void playBoom(Point3D loc){
+		Sound s = makeSound(boomSound, loc, 100);
+		runningSounds.add(s);
+		s.play();
+
 	}
 
 	private TerrainBlock createTerBlock(AbstractHeightMap heightMap) {
@@ -330,6 +376,8 @@ public class Starter extends BaseGame {
 			addGameWorldObject(l);
 
 		time += elapsedTime;
+
+		updateEar();
 
 		super.update(elapsedTime);
 	}
