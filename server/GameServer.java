@@ -120,7 +120,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 	public void resetGame() {
 		System.out.println("Resetting game");
-		mapSeed = -1;
+		Random r = new Random();
+		mapSeed = r.nextInt();
+		setupTerrain(mapSeed);
 	}
 
 	public void firstPlayer(UUID clientID) {
@@ -177,6 +179,8 @@ public class GameServer extends GameConnectionServer<UUID> {
 				addClient(ci, clientID);
 				timeSincePing.put(clientID, getTime());
 				sendJoinedMessage(clientID, true);
+				if(timeSincePing.size() == 1)
+					firstPlayer(clientID);
 			}
 		}
 	}
@@ -206,11 +210,6 @@ public class GameServer extends GameConnectionServer<UUID> {
 				//format: create,localid,x,y,z
 				UUID clientID = UUID.fromString(msgTokens[1]);
 				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6]};
-				if(mapSeed == -1){
-					mapSeed = Integer.parseInt(msgTokens[7]);
-					setupTerrain(mapSeed);
-					firstPlayer(clientID);
-				}
 				sendCreateMessages(clientID, pos);
 				for(AITank ai : aitanks){
 					ai.sendHiMessage(clientID);
