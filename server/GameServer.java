@@ -104,6 +104,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			float dx = (float)(dest.getX() - source.getX());
 			float dz = (float)(dest.getY() - source.getY());
 			bearing = (float)(Math.atan2(dz,dx) * 180 / Math.PI);
+			System.out.println(bearing);
 			pitch = 45.0f;
 			power = 15.0f;
 		}
@@ -113,7 +114,6 @@ public class GameServer extends GameConnectionServer<UUID> {
 			float deltaBearing = desiredBearing - bearing;
 			float deltaPitch = desiredPitch - pitch;
 			if(desiredBearing == -1 || timeSinceTargetChange > 30000) {
-				System.out.println("Picking new target");
 				pickTarget();
 				calculateBearing();
 				timeSinceTargetChange = -1 * (r.nextInt() % 3000);
