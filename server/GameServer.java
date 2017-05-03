@@ -128,6 +128,10 @@ public class GameServer extends GameConnectionServer<UUID> {
 		aitanks = new ArrayList<AITank>();
 		aitanks.add(new AITank(this));
 		aitanks.add(new AITank(this));
+		aitanks.add(new AITank(this));
+		aitanks.add(new AITank(this));
+		aitanks.add(new AITank(this));
+		aitanks.add(new AITank(this));
 	}
 
 	public void loop() {
