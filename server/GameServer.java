@@ -222,6 +222,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 		System.out.println("Resetting game");
 		/*Random r = new Random();
 		mapSeed = r.nextInt();*/
+		positions = new HashMap<UUID, Point3D>();
 		mapSeed = 12345;
 		setupTerrain(mapSeed);
 	}
