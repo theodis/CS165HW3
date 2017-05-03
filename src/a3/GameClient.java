@@ -102,6 +102,7 @@ public class GameClient extends GameConnectionClient {
 		if(messageTokens[0].compareTo("map") == 0) {
 			int newseed = Integer.parseInt(messageTokens[1]);
 			Starter.getInst().setupTerrain(newseed);
+			Starter.getInst().setupTrees();
 		}
 	}
 

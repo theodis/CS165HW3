@@ -114,6 +114,15 @@ public class Starter extends BaseGame {
 		return ret;
 	}
 
+	public void setupTrees() {
+
+		//Add trees
+		treeTexture = TextureManager.loadTexture2D("tree.png");
+		for(int i = 0; i < 100; i++) 
+			addRandomTree();
+
+	}
+
 	private void addRandomTree() {
 
 		OBJLoader loader = new OBJLoader();
@@ -244,11 +253,6 @@ public class Starter extends BaseGame {
 		sky.scale(500,500,500);
 		sky.setZBufferStateEnabled(false);
 		addGameWorldObject(sky);
-
-		//Add trees
-		treeTexture = TextureManager.loadTexture2D("tree.png");
-		for(int i = 0; i < 100; i++) 
-			addRandomTree();
 
 		//Setup bomb stuff
 		bombs = new ArrayList<Bomb>();
