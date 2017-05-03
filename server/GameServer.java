@@ -98,6 +98,8 @@ public class GameServer extends GameConnectionServer<UUID> {
 			Point3D source = server.getPositions().get(id);
 			Point3D dest = server.getPositions().get(id);
 
+			if(source == null || dest == null) return;
+
 			float dx = (float)(dest.getX() - source.getX());
 			float dz = (float)(dest.getY() - source.getY());
 			bearing = (float)(Math.atan2(dz,dx) * 180 / Math.PI);
