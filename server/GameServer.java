@@ -125,6 +125,8 @@ public class GameServer extends GameConnectionServer<UUID> {
 				sendFireMessage();
 				timeSinceLastShot = -1 * (r.nextInt() % 2000);
 			}
+			timeSinceLastShot += elapsedTime;
+			timeSinceTargetChange += elapsedTime;
 		}
 
 		public void sendFireMessage() {
