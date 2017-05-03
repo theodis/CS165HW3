@@ -67,7 +67,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			HashMap<UUID, Point3D> pos = server.getPositions();
 			if(pos.size() <= 1) return; //Don't try to pick a target if no one is around
 			do{
-				int targetInd = r.nextInt() % pos.size();
+				int targetInd = Math.abs(r.nextInt()) % pos.size();
 				target = (UUID)pos.keySet().toArray()[targetInd];
 			}while(id != target);
 		}
