@@ -177,8 +177,6 @@ public class GameServer extends GameConnectionServer<UUID> {
 				addClient(ci, clientID);
 				timeSincePing.put(clientID, getTime());
 				sendJoinedMessage(clientID, true);
-				if(timeSincePing.size() == 1)
-					firstPlayer(clientID);
 			}
 		}
 	}
@@ -211,6 +209,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 				if(mapSeed == -1){
 					mapSeed = Integer.parseInt(msgTokens[7]);
 					setupTerrain(mapSeed);
+					firstPlayer(clientID);
 				}
 				sendCreateMessages(clientID, pos);
 				for(AITank ai : aitanks){
