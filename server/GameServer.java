@@ -112,6 +112,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			float deltaBearing = desiredBearing - bearing;
 			float deltaPitch = desiredPitch - pitch;
 			if(desiredBearing == -1 || timeSinceTargetChange > 30000) {
+				System.out.println("Picking new target");
 				pickTarget();
 				calculateBearing();
 				timeSinceTargetChange = -1 * (r.nextInt() % 3000);
@@ -124,6 +125,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 				pitch += deltaPitch;
 				sendMoveMessage();
 			} else if(timeSinceLastShot > 5000) {
+				System.out.println("Firing");
 				sendFireMessage();
 				timeSinceLastShot = -1 * (r.nextInt() % 2000);
 			}
