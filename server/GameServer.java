@@ -58,7 +58,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			desiredBearing = -1;
 			desiredPitch = -1;
 			lastBearing = lastPitch = 0;
-			server.sendCreateMessages(id, getPosStrings());
+			//server.sendCreateMessages(id, getPosStrings());
 			sendMoveMessage();
 		}
 
