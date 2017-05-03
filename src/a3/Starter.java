@@ -281,7 +281,7 @@ public class Starter extends BaseGame {
 	private Sound makeSound(AudioResource r, Point3D pos, int volume){
 		Sound ret = new Sound(r, SoundType.SOUND_EFFECT, volume, false);
 		ret.initialize(audioManager);
-		ret.setPosition(pos);
+		ret.setLocation(pos);
 		ret.setMaxDistance(1000.0f);
 		ret.setMinDistance(10.0f);
 		ret.setRollOff(2.0f);
