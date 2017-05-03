@@ -76,9 +76,6 @@ public class GameServer extends GameConnectionServer<UUID> {
 	public TerrainBlock getTerrain() {return terrain;}
 
     public void setupTerrain(int seed) {
-
-        mapSeed = seed;
-
 		//Setup hills
         HillHeightMap hills = new HillHeightMap(129,2000,5.0f,20.0f,(byte)2,seed);
         hills.setHeightScale(0.1f);
@@ -120,8 +117,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 	public void resetGame() {
 		System.out.println("Resetting game");
-		Random r = new Random();
-		mapSeed = r.nextInt();
+		/*Random r = new Random();
+		mapSeed = r.nextInt();*/
+		mapSeed = 12345;
 		setupTerrain(mapSeed);
 	}
 
