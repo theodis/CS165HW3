@@ -261,8 +261,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 				resetGame();
 			}
 
-			for(AITank ai : aitanks)
-				ai.update(100); // Just assume 100ms
+			if(aitanks != null)
+				for(AITank ai : aitanks)
+					ai.update(100); // Just assume 100ms
 
 			try{
 				Thread.sleep(100);
