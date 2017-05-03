@@ -175,7 +175,6 @@ public class GameServer extends GameConnectionServer<UUID> {
 	public HashMap<UUID, Point3D> getPositions() { return positions; }
 
 	public void setPosition(UUID client, Point3D pos) {
-		System.out.println(pos);
 		positions.put(client, pos);
 	}
 
@@ -227,7 +226,6 @@ public class GameServer extends GameConnectionServer<UUID> {
 		System.out.println("Resetting game");
 		/*Random r = new Random();
 		mapSeed = r.nextInt();*/
-		positions = new HashMap<UUID, Point3D>();
 		mapSeed = 12345;
 		setupTerrain(mapSeed);
 	}
@@ -281,6 +279,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 	public GameServer(int localPort) throws IOException{
 		super(localPort, ProtocolType.TCP);
+		positions = new HashMap<UUID, Point3D>();
 		timeSincePing = new HashMap<UUID, Long>();
 	}
 
