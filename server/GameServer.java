@@ -97,7 +97,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 		public void calculateBearing() {
 			Point3D source = server.getPositions().get(id);
-			Point3D dest = server.getPositions().get(id);
+			Point3D dest = server.getPositions().get(target);
 
 			if(source == null || dest == null) return;
 
