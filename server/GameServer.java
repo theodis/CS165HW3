@@ -104,7 +104,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			float dx = (float)(dest.getX() - source.getX());
 			float dz = (float)(dest.getY() - source.getY());
 			bearing = (float)(Math.atan2(dz,dx) * 180 / Math.PI);
-			System.out.println(dx + " " + dy + " " + bearing);
+			System.out.println(dx + " " + dz + " " + bearing);
 			pitch = 45.0f;
 			power = 15.0f;
 		}
