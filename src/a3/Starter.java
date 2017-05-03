@@ -284,7 +284,7 @@ public class Starter extends BaseGame {
 		ret.initialize(audioManager);
 		ret.setMaxDistance(1000.0f);
 		ret.setMinDistance(10.0f);
-		ret.setRollOff(0.33f);
+		ret.setRollOff(1.0f);
 		return ret;
 	}
 	private void playShot(Point3D loc){
