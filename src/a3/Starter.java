@@ -273,7 +273,6 @@ public class Starter extends BaseGame {
 	}
 
 	private void updateEar(){
-		//System.out.println(player.getCamera().getLocation());
 		audioManager.getEar().setLocation(player.getCamera().getLocation());
 		audioManager.getEar().setOrientation(player.getCamera().getViewDirection(), new Vector3D(0,1,0));
 	}
@@ -282,14 +281,13 @@ public class Starter extends BaseGame {
 	private Sound makeSound(AudioResource r, Point3D pos, int volume){
 		Sound ret = new Sound(r, SoundType.SOUND_EFFECT, volume, false);
 		ret.initialize(audioManager);
+		ret.setPosition(pos);
 		ret.setMaxDistance(1000.0f);
 		ret.setMinDistance(10.0f);
-		ret.setRollOff(1.0f);
+		ret.setRollOff(2.0f);
 		return ret;
 	}
 	private void playShot(Point3D loc){
-		System.out.println(player.getCamera().getLocation());
-		System.out.println(loc);
 		Sound s = makeSound(shotSound, loc, 100);
 		runningSounds.add(s);
 		s.play();
