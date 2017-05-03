@@ -99,6 +99,10 @@ public class GameClient extends GameConnectionClient {
 				game.addBomb(new Vector3D(px,py,pz), new Vector3D(vx,vy,vz));
 			}
 		}
+		if(messageTokens[0].compareTo("map") == 0) {
+			int newseed = Integer.parseInt(messageTokens[1]);
+			Starter.getInst().setupTerrain(newseed);
+		}
 	}
 
 	public String positionString() {
@@ -111,7 +115,7 @@ public class GameClient extends GameConnectionClient {
 	public void sendCreateMessage() {
 		try {
 			String message = new String("create," + id.toString());
-			message += "," + positionString();
+			message += "," + positionString() + "," + Starter.getInst().getMapSeed();
 			System.out.println(message);
 			sendPacket(message);
 		} catch(IOException e) {

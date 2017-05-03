@@ -84,6 +84,9 @@ public class Starter extends BaseGame {
 	private AudioResource shotSound, boomSound;
 	private ArrayList<Sound> runningSounds;
 
+	private int mapSeed;
+
+	public int getMapSeed() { return mapSeed; }
 	public HillHeightMap getHills() { return hills; }
 	public TerrainBlock getTerrain() { return terrain; }
 	public Player getPlayer() { return player; }
@@ -225,30 +228,13 @@ public class Starter extends BaseGame {
 
 		addGameWorldObject(player.getSceneNode());
 
-		//Setup hills
-		hills = new HillHeightMap(129,2000,5.0f,20.0f,(byte)2,12345);
-		hills.setHeightScale(0.1f);
-
-		//jshm = new JSHeightMap("dostuff.js","a");
-
-		terrain = createTerBlock(hills);
-
-		//Hills texture stuff
-		TextureState grassState;
-		Texture grassTexture = TextureManager.loadTexture2D("grass.png");
-		grassTexture.setApplyMode(sage.texture.Texture.ApplyMode.Replace);
-		grassState = (TextureState)display.getRenderer().createRenderState(RenderState.RenderStateType.Texture);
-		grassState.setTexture(grassTexture,0);
-		grassState.setEnabled(true);
-
-		terrain.setRenderState(grassState);
-
-		addGameWorldObject(terrain);
+		setupTerrain(rand.nextInt());
 
 		//Skybox
 		sky = new SkyBox();
 		Texture sunTexture = TextureManager.loadTexture2D("sun.png");
 		Texture skyTexture = TextureManager.loadTexture2D("blue.png");
+		Texture grassTexture = TextureManager.loadTexture2D("grass.png");
 		sky.setTexture(SkyBox.Face.Up, skyTexture);
 		sky.setTexture(SkyBox.Face.Down, grassTexture);
 		sky.setTexture(SkyBox.Face.North, skyTexture);
@@ -309,6 +295,34 @@ public class Starter extends BaseGame {
 		Sound s = makeSound(boomSound, loc, 100);
 		runningSounds.add(s);
 		s.play();
+
+	}
+
+	public void setupTerrain(int seed) {
+
+		mapSeed = seed;
+		if(terrain != null)
+			removeGameWorldObject(terrain);
+
+		//Setup hills
+		hills = new HillHeightMap(129,2000,5.0f,20.0f,(byte)2,seed);
+		hills.setHeightScale(0.1f);
+
+		//jshm = new JSHeightMap("dostuff.js","a");
+
+		terrain = createTerBlock(hills);
+
+		//Hills texture stuff
+		TextureState grassState;
+		Texture grassTexture = TextureManager.loadTexture2D("grass.png");
+		grassTexture.setApplyMode(sage.texture.Texture.ApplyMode.Replace);
+		grassState = (TextureState)display.getRenderer().createRenderState(RenderState.RenderStateType.Texture);
+		grassState.setTexture(grassTexture,0);
+		grassState.setEnabled(true);
+
+		terrain.setRenderState(grassState);
+
+		addGameWorldObject(terrain);
 
 	}
 

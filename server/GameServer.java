@@ -36,7 +36,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 		}
 	}
 
-	private int hillsSeed;
+	private int mapSeed;
 	private HashMap<UUID, Long> timeSincePing;
 	private HashMap<UUID, Point3D> positions;
 	private ArrayList<AITank> aitanks;
@@ -52,6 +52,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 	public void resetGame() {
 		System.out.println("Resetting game");
+		mapSeed = -1;
 	}
 
 	public void firstPlayer(UUID clientID) {
@@ -139,7 +140,11 @@ public class GameServer extends GameConnectionServer<UUID> {
 				//format: create,localid,x,y,z
 				UUID clientID = UUID.fromString(msgTokens[1]);
 				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6]};
+				if(mapSeed == -1){
+					mapSeed = Integer.parseInt(msgTokens[7]);
+				}
 				sendCreateMessages(clientID, pos);
+				sendMapSeed();
 			}
 
 			if(msgTokens[0].compareTo("move") == 0) {
@@ -242,6 +247,17 @@ public class GameServer extends GameConnectionServer<UUID> {
 			String message = new String("bye," + clientID.toString());
 			System.out.println(message);
 			forwardPacketToAll(message, clientID);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void sendMapSeed() {
+		try {
+			String message = new String("map," + mapSeed);
+			System.out.println(message);
+			sendPacketToAll(message);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
