@@ -59,6 +59,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			desiredPitch = -1;
 			lastBearing = lastPitch = 0;
 			server.sendCreateMessages(id, getPosStrings());
+			sendMoveMessage();
 		}
 
 		public void pickTarget() {
