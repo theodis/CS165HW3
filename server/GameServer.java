@@ -6,12 +6,15 @@ import java.lang.Thread;
 
 import sage.networking.server.GameConnectionServer;
 import sage.networking.server.IClientInfo;
+import sage.terrain.*;
 
 import graphicslib3D.*;
 
 public class GameServer extends GameConnectionServer<UUID> {
 
 	public class AITank {
+		private GameServer server;
+
 		private UUID id;
 		private float bearing;
 		private float pitch;
@@ -26,13 +29,41 @@ public class GameServer extends GameConnectionServer<UUID> {
 		private float hitY;
 		private float hitZ;
 
+		public String[] getPosStrings() {
+			return new String[] {
+				((Float)x).toString(),
+				((Float)y).toString(),
+				((Float)z).toString(),
+				((Float)bearing).toString(),
+				((Float)pitch).toString(),
+			};
+
+		}
+
 		public AITank(GameServer g){
+			server = g;
 			id = UUID.randomUUID();
 			x = (float)Math.random() * 128;
-			y = 0; //FIXME: Pull from heightmap
 			z = (float)Math.random() * 128;
+			y = g.getHeightAt(x,z);
 
-			lastBearing = lastPitch = -1;
+			lastBearing = lastPitch = 0;
+			server.sendCreateMessages(id, getPosStrings());
+		}
+
+		public void sendMoveMessage() {
+			String[] pos = new String[] {
+				((Float)x).toString(),
+				((Float)y).toString(),
+				((Float)z).toString(),
+				((Float)bearing).toString(),
+				((Float)pitch).toString(),
+			};
+			server.sendMoveMessages(id, getPosStrings());
+		}
+
+		public void sendHiMessage(UUID dest) {
+			server.sendHiMessages(id, dest, getPosStrings());
 		}
 	}
 
@@ -40,6 +71,43 @@ public class GameServer extends GameConnectionServer<UUID> {
 	private HashMap<UUID, Long> timeSincePing;
 	private HashMap<UUID, Point3D> positions;
 	private ArrayList<AITank> aitanks;
+
+	private TerrainBlock terrain;
+	public TerrainBlock getTerrain() {return terrain;}
+
+    public void setupTerrain(int seed) {
+
+        mapSeed = seed;
+
+		//Setup hills
+        HillHeightMap hills = new HillHeightMap(129,2000,5.0f,20.0f,(byte)2,seed);
+        hills.setHeightScale(0.1f);
+
+        terrain = createTerBlock(hills);
+	}
+
+    private TerrainBlock createTerBlock(AbstractHeightMap heightMap) {
+        float heightScale = 0.05f;
+        Vector3D terrainScale = new Vector3D(1,heightScale,1);
+        int terrainSize = heightMap.getSize();
+
+        float cornerHeight = heightMap.getTrueHeightAtPoint(0,0) * heightScale;
+        Point3D terrainOrigin = new Point3D(0, -cornerHeight, 0);
+        String name = "Terrain:" + heightMap.getClass().getSimpleName();
+        TerrainBlock ret = new TerrainBlock(name, terrainSize, terrainScale, heightMap.getHeightData(), terrainOrigin);
+        return ret;
+    }
+
+    public float getHeightAt(float x, float z) {
+        TerrainBlock tb = getTerrain();
+        int dim = tb.getSize();
+        float ret = 0;
+        if(x >= 0 && x < dim - 1 && z >= 0 && z < dim - 1){
+            ret = tb.getHeight(x,z) - 1.5f;
+        }
+
+        return ret;
+    }
 
 	private static long getTime() {
 		Date d = new Date();
@@ -142,8 +210,12 @@ public class GameServer extends GameConnectionServer<UUID> {
 				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6]};
 				if(mapSeed == -1){
 					mapSeed = Integer.parseInt(msgTokens[7]);
+					setupTerrain(mapSeed);
 				}
 				sendCreateMessages(clientID, pos);
+				for(AITank ai : aitanks){
+					ai.sendHiMessage(clientID);
+				}
 				sendMapSeed();
 			}
 
