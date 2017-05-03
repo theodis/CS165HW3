@@ -16,8 +16,11 @@ public class GameServer extends GameConnectionServer<UUID> {
 		private GameServer server;
 
 		private UUID id;
+		private UUID target;
+
 		private float bearing;
 		private float pitch;
+		private float power = 15.0f;
 		private float x;
 		private float y;
 		private float z;
@@ -28,6 +31,11 @@ public class GameServer extends GameConnectionServer<UUID> {
 		private float hitX;
 		private float hitY;
 		private float hitZ;
+
+		private int timeSinceTargetChange;
+		private int timeSinceLastShot;
+		private float desiredBearing;
+		private float desiredPitch;
 
 		public String[] getPosStrings() {
 			return new String[] {
@@ -47,11 +55,94 @@ public class GameServer extends GameConnectionServer<UUID> {
 			z = (float)Math.random() * 128;
 			y = g.getHeightAt(x,z);
 
+			desiredBearing = -1;
+			desiredPitch = -1;
 			lastBearing = lastPitch = 0;
 			server.sendCreateMessages(id, getPosStrings());
 		}
 
+		public void pickTarget() {
+			Random r = new Random();
+			HashMap<UUID, Point3D> pos = server.getPositions();
+			if(pos.size() <= 1) return; //Don't try to pick a target if no one is around
+			do{
+				int targetInd = r.nextInt() % pos.size();
+				target = (UUID)pos.keySet().toArray()[targetInd];
+			}while(id != target);
+		}
+
+		private Vector3D[] getFirePosAndVel() { 
+			Vector3D[] ret = new Vector3D[2];
+			Point3D p = server.getPositions().get(id);
+			Vector3D pos = new Vector3D(p.getX(), p.getY(), p.getZ());
+			double alpha = ((360 - bearing) * Math.PI) / 180;
+			double beta = (pitch * Math.PI) / 180;
+			double x = Math.cos(alpha) * Math.cos(beta);
+			double z = Math.sin(alpha) * Math.cos(beta);
+			double y = Math.sin(beta);
+			Vector3D vel = new Vector3D(x,y,z);
+			vel.scale(power);
+
+			//Move the bomb forward a bit
+			vel.scale(1/100.0);
+			pos = pos.add(vel);
+			vel.scale(100/1.0);
+
+			ret[0] = pos;
+			ret[1] = vel;
+
+			return ret;
+		}
+
+		public void calculateBearing() {
+			Point3D source = server.getPositions().get(id);
+			Point3D dest = server.getPositions().get(id);
+
+			float dx = (float)(dest.getX() - source.getX());
+			float dz = (float)(dest.getY() - source.getY());
+			bearing = (float)(Math.atan2(dz,dx) * 180 / Math.PI);
+			pitch = 45.0f;
+			power = 15.0f;
+		}
+
+		public void update(int elapsedTime) {
+			Random r = new Random();
+			float deltaBearing = desiredBearing - bearing;
+			float deltaPitch = desiredPitch - pitch;
+			if(desiredBearing == -1 || timeSinceTargetChange > 30000) {
+				pickTarget();
+				calculateBearing();
+				timeSinceTargetChange = -1 * (r.nextInt() % 3000);
+			} else if(deltaBearing != 0 || deltaPitch != 0){
+				//If not at desired pitch or bearing then move in that direction
+				//Cap change to 10 per update
+				if(Math.abs(deltaBearing) > 10) deltaBearing = deltaBearing * 10 / Math.abs(deltaBearing);
+				if(Math.abs(deltaPitch) > 10) deltaPitch = deltaPitch * 10 / Math.abs(deltaPitch);
+				bearing += deltaBearing;
+				pitch += deltaPitch;
+				sendMoveMessage();
+			} else if(timeSinceLastShot > 5000) {
+				sendFireMessage();
+				timeSinceLastShot = -1 * (r.nextInt() % 2000);
+			}
+		}
+
+		public void sendFireMessage() {
+			Vector3D[] posVel = getFirePosAndVel();
+			server.sendFireMessages(id, new String[]{
+				((Double)posVel[0].getX()).toString(),	
+				((Double)posVel[0].getY()).toString(),	
+				((Double)posVel[0].getZ()).toString(),	
+				((Double)posVel[1].getX()).toString(),	
+				((Double)posVel[1].getY()).toString(),	
+				((Double)posVel[1].getZ()).toString(),	
+			});
+		}
+
 		public void sendMoveMessage() {
+
+			setPosition(id, new Point3D(x,y,z));
+
 			String[] pos = new String[] {
 				((Float)x).toString(),
 				((Float)y).toString(),
@@ -74,6 +165,16 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 	private TerrainBlock terrain;
 	public TerrainBlock getTerrain() {return terrain;}
+
+	public HashMap<UUID, Point3D> getPositions() { return positions; }
+
+	public void setPosition(UUID client, Point3D pos) {
+		positions.put(client, pos);
+	}
+
+	public void removePosition(UUID client) {
+		positions.remove(client);
+	}
 
     public void setupTerrain(int seed) {
 		//Setup hills
@@ -157,6 +258,10 @@ public class GameServer extends GameConnectionServer<UUID> {
 			if(timeSincePing.size() == 0 && remove.size() > 0) {
 				resetGame();
 			}
+
+			for(AITank ai : aitanks)
+				ai.update(100); // Just assume 100ms
+
 			try{
 				Thread.sleep(100);
 			} catch(Exception e) {
@@ -223,6 +328,10 @@ public class GameServer extends GameConnectionServer<UUID> {
 				//format: move,localid,x,y,z
 				UUID clientID = UUID.fromString(msgTokens[1]);
 				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6]};
+				setPosition(clientID, new Point3D(
+							Float.parseFloat(msgTokens[2]),
+							Float.parseFloat(msgTokens[3]),
+							Float.parseFloat(msgTokens[4])));
 				sendMoveMessages(clientID, pos);
 			}
 
