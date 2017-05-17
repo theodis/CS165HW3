@@ -438,6 +438,7 @@ public class Starter extends BaseGame implements IEventListener {
 	
 	public void renewPrediction() {
 		if(firePredict != null) clearPrediction(); // Clear old prediction if it exists
+		if(player.isDead()) return; //Don't bother with predictions for a dead player
 		firePredict = new ArrayList<Line>();
 		firePredictShadow = new ArrayList<Line>();
 		

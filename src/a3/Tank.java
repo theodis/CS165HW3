@@ -197,6 +197,10 @@ public class Tank extends Group implements IEventListener {
 				//Boom!
 				Starter.getInst().getEventManager().triggerEvent(new TankDestroyedEvent(ee.getSource(), this));
 				Starter.getInst().removeObject(this);
+
+				if(Starter.getInst().getPlayer().getSceneNode() == this){
+					Starter.getInst().getPlayer().Died();
+				}
 			}			
 			return true;
 		}

@@ -28,6 +28,7 @@ public class Player {
 	private HUDString powerString;
 	private HUDString scoreString;
 	private InputController inputController;
+	private boolean dead;
 
 	public Color getTankColor() {
 		JSEngine.getInst().execute("vars.js");
@@ -40,6 +41,9 @@ public class Player {
 
 	public void addPoint() {score++;}
 
+	public boolean isDead() { return dead; }
+	public void Died() { dead = true; }
+
 	public Player() {
 
 		IRenderer renderer = Starter.getInst().getDisplaySystem().getRenderer();
@@ -47,6 +51,7 @@ public class Player {
 		
 		//playerNode = new Pyramid();
 		
+		dead = false;
 		playerNode = new Tank();
 		Matrix3D pnp = new Matrix3D();
 		pnp.translate(Math.random() * 128,1, Math.random() * 128);
@@ -171,7 +176,7 @@ public class Player {
 						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 					input.associateAction(c, Identifier.Button.X, 
 						new AbstractInputAction(){public void performAction(float time, Event event) {
-							playerNode.fire();
+							if(!dead) playerNode.fire();
 						}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 					input.associateAction(c, Identifier.Button.SELECT, 
 						new AbstractInputAction(){public void performAction(float time, Event event) {
@@ -190,7 +195,7 @@ public class Player {
 						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 					input.associateAction(c, Identifier.Button._2, 
 						new AbstractInputAction(){public void performAction(float time, Event event) {
-							playerNode.fire();
+							if(!dead) playerNode.fire();
 						}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 					input.associateAction(c, Identifier.Button._6, 
 						new AbstractInputAction(){public void performAction(float time, Event event) {
