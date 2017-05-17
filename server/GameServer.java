@@ -314,17 +314,17 @@ public class GameServer extends GameConnectionServer<UUID> {
 			}
 
 			if(msgTokens[0].compareTo("hi") == 0) {
-				//format: hi,localid,destid,x,y,z
+				//format: hi,localid,destid,x,y,z,rot,pitch,r,g,b
 				UUID localID = UUID.fromString(msgTokens[1]);
 				UUID destinationID = UUID.fromString(msgTokens[2]);
-				String[] pos = {msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7]};
+				String[] pos = {msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7], msgTokens[8], msgTokens[9], msgTokens[10]};
 				sendHiMessages(localID,destinationID, pos);
 			}
 
 			if(msgTokens[0].compareTo("create") == 0) {
-				//format: create,localid,x,y,z
+				//format: create,localid,x,y,z,rot,pitch,r,g,b
 				UUID clientID = UUID.fromString(msgTokens[1]);
-				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6]};
+				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7], msgTokens[8], msgTokens[9]};
 				sendCreateMessages(clientID, pos);
 				for(AITank ai : aitanks){
 					ai.sendHiMessage(clientID);
@@ -333,9 +333,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 			}
 
 			if(msgTokens[0].compareTo("move") == 0) {
-				//format: move,localid,x,y,z
+				//format: move,localid,x,y,z,rot,pitch,r,g,b
 				UUID clientID = UUID.fromString(msgTokens[1]);
-				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6]};
+				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7], msgTokens[8], msgTokens[9]};
 				setPosition(clientID, new Point3D(
 							Float.parseFloat(msgTokens[2]),
 							Float.parseFloat(msgTokens[3]),
@@ -344,9 +344,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 			}
 
 			if(msgTokens[0].compareTo("fire") == 0) {
-				//format: move,localid,x,y,z
+				//format: move,localid,x,y,z,rot,pitch,r,g,b
 				UUID clientID = UUID.fromString(msgTokens[1]);
-				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7]};
+				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7], msgTokens[8], msgTokens[9], msgTokens[10]};
 				sendFireMessages(clientID, pos);
 			}
 
@@ -378,6 +378,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 			message += "," + position[2];
 			message += "," + position[3];
 			message += "," + position[4];
+			message += "," + position[5];
+			message += "," + position[6];
+			message += "," + position[7];
 			System.out.println(message);
 			sendPacket(message, destID);
 		} catch (IOException e) {
@@ -393,6 +396,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 			message += "," + position[2];
 			message += "," + position[3];
 			message += "," + position[4];
+			message += "," + position[5];
+			message += "," + position[6];
+			message += "," + position[7];
 			System.out.println(message);
 			forwardPacketToAll(message, clientID);
 		} catch (IOException e) {
@@ -408,6 +414,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 			message += "," + position[2];
 			message += "," + position[3];
 			message += "," + position[4];
+			message += "," + position[5];
+			message += "," + position[6];
+			message += "," + position[7];
 			System.out.println(message);
 			forwardPacketToAll(message, clientID);
 		} catch (IOException e) {
