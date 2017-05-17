@@ -273,16 +273,16 @@ public class Starter extends BaseGame implements IEventListener {
 		}
 
 		//Axis set up
-		Point3D origin = new Point3D(0,0,0);
-		Point3D xEnd = new Point3D(1000,0,0);
-		Point3D yEnd = new Point3D(0,1000,0);
-		Point3D zEnd = new Point3D(0,0,1000);
-		Line xAxis = new Line(origin,xEnd, Color.red, 2);
-		Line yAxis = new Line(origin,yEnd, Color.green, 2);
-		Line zAxis = new Line(origin,zEnd, Color.blue, 2);
-		addGameWorldObject(xAxis);
-		addGameWorldObject(yAxis);
-		addGameWorldObject(zAxis);
+		//Point3D origin = new Point3D(0,0,0);
+		//Point3D xEnd = new Point3D(1000,0,0);
+		//Point3D yEnd = new Point3D(0,1000,0);
+		//Point3D zEnd = new Point3D(0,0,1000);
+		//Line xAxis = new Line(origin,xEnd, Color.red, 2);
+		//Line yAxis = new Line(origin,yEnd, Color.green, 2);
+		//Line zAxis = new Line(origin,zEnd, Color.blue, 2);
+		//addGameWorldObject(xAxis);
+		//addGameWorldObject(yAxis);
+		//addGameWorldObject(zAxis);
 
 		//Setup input
 		kbInputActions = new HashMap<Identifier, AbstractInputAction>();
