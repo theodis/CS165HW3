@@ -44,6 +44,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 				((Float)z).toString(),
 				((Float)bearing).toString(),
 				((Float)pitch).toString(),
+				"255","255","255"
 			};
 
 		}
