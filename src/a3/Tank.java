@@ -89,6 +89,10 @@ public class Tank extends Group implements IEventListener {
 		turret.setColor(c);
 	}
 
+	public Color getColor() {
+		return turret.getColor();
+	}
+
 	public void rotateTop(float angle) {
 		setTopRotation(topRotation + angle);
 	}

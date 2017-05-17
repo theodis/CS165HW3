@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 import sage.networking.IGameConnection.ProtocolType;
+import java.awt.Color;
 
 public class GameClient extends GameConnectionClient {
 	private UUID id;
@@ -111,7 +112,8 @@ public class GameClient extends GameConnectionClient {
 		Player p = Starter.getInst().getPlayer();
 		Tank t = p.getSceneNode();
 		Vector3D pos = p.getPosition();
-		return pos.getX() + "," + pos.getY() + "," + pos.getZ() + "," + t.getTopRotation() + "," + t.getTurretPitch();
+		Color c = t.getColor();
+		return pos.getX() + "," + pos.getY() + "," + pos.getZ() + "," + t.getTopRotation() + "," + t.getTurretPitch() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue();
 	}
 
 	public void sendCreateMessage() {

@@ -29,6 +29,15 @@ public class Player {
 	private HUDString scoreString;
 	private InputController inputController;
 
+	public Color getTankColor() {
+		JSEngine.getInst().execute("vars.js");
+		Double r = (Double)JSEngine.getInst().getEngine().get("r");
+		Double g = (Double)JSEngine.getInst().getEngine().get("g");
+		Double b = (Double)JSEngine.getInst().getEngine().get("b");
+
+		return new Color(r.floatValue(),g.floatValue(),b.floatValue());
+	}
+
 	public Player() {
 
 		IRenderer renderer = Starter.getInst().getDisplaySystem().getRenderer();
@@ -40,7 +49,8 @@ public class Player {
 		Matrix3D pnp = new Matrix3D();
 		pnp.translate(Math.random() * 128,1, Math.random() * 128);
 		playerNode.setLocalTranslation(pnp);
-		playerNode.setColor(Color.BLUE.darker());
+		playerNode.setColor(getTankColor());
+		//playerNode.setColor(Color.BLUE.darker());
 
 		//Set up camera and camera controller
 		camera = new JOGLCamera(renderer);
