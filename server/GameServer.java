@@ -345,9 +345,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 			}
 
 			if(msgTokens[0].compareTo("fire") == 0) {
-				//format: move,localid,x,y,z,rot,pitch,r,g,b
+				//format: move,localid,x,y,z
 				UUID clientID = UUID.fromString(msgTokens[1]);
-				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7], msgTokens[8], msgTokens[9], msgTokens[10]};
+				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7]};
 				sendFireMessages(clientID, pos);
 			}
 
