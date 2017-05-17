@@ -255,11 +255,13 @@ public class GameServer extends GameConnectionServer<UUID> {
 		addAITank();
 		addAITank();
 		addAITank();
+		nextTurn();
 	}
 
 	public void addAITank() {
 		AITank t = new AITank(this);
 		aitanks.put(t.getID(), t);
+		turnOrder.add(t.getID());
 	}
 
 	public void loop() {
@@ -317,6 +319,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 		if(booms.containsKey(id)) booms.remove(id);
 		if(booms.keySet().size() >= timeSincePing.keySet().size()) nextTurn();
 		else if(curPlayer == id) nextTurn();
+		turnOrder.remove(id);
 	}
 
 	public void nextTurn() {
@@ -361,6 +364,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 		if(messageTokens.length > 0) {
 			if(messageTokens[0].compareTo("join") == 0) {
 				UUID clientID = UUID.fromString(messageTokens[1]);
+				turnOrder.add(clientID);
 				addClient(ci, clientID);
 				timeSincePing.put(clientID, getTime());
 				sendJoinedMessage(clientID, true);
@@ -426,16 +430,16 @@ public class GameServer extends GameConnectionServer<UUID> {
 			}
 
 			if(msgTokens[0].compareTo("boom") == 0) {
-				//format: ping,localid,x,y,z
+				//format: boom,localid,x,y,z
 
-				UUID clientID = UUID.fromString(msgTokens[2]);
+				UUID clientID = UUID.fromString(msgTokens[1]);
 				float x = Float.parseFloat(msgTokens[2]);
 				float y = Float.parseFloat(msgTokens[3]);
 				float z = Float.parseFloat(msgTokens[4]);
 			}
 
 			if(msgTokens[0].compareTo("dead") == 0) {
-				//format: ping,localid,deadid
+				//format: dead,localid,deadid
 				UUID deadID = UUID.fromString(msgTokens[2]);
 			}
 		}
