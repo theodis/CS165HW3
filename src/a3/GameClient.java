@@ -50,12 +50,16 @@ public class GameClient extends GameConnectionClient {
 			float z = Float.parseFloat(messageTokens[4]);
 			float top = Float.parseFloat(messageTokens[5]);
 			float tur = Float.parseFloat(messageTokens[6]);
-			Ghost g = new Ghost(x,y,z);
-			Tank t = g.getNode();
+			int r = Integer.parseInt(messageTokens[7]);
+			int g = Integer.parseInt(messageTokens[8]);
+			int b = Integer.parseInt(messageTokens[9]);
+			Ghost gh = new Ghost(x,y,z);
+			Tank t = gh.getNode();
 			t.setTopRotation(top);
 			t.setTurretPitch(tur);
-			ghosts.put(ghostID, g);
-			game.addObject(g.getNode());
+			t.setColor(new Color(r,g,b));
+			ghosts.put(ghostID, gh);
+			game.addObject(gh.getNode());
 			sendHiMessage(ghostID);
 		}
 		if(messageTokens[0].compareTo("hi") == 0) {
@@ -65,12 +69,16 @@ public class GameClient extends GameConnectionClient {
 			float z = Float.parseFloat(messageTokens[4]);
 			float top = Float.parseFloat(messageTokens[5]);
 			float tur = Float.parseFloat(messageTokens[6]);
-			Ghost g = new Ghost(x,y,z);
-			Tank t = g.getNode();
+			int r = Integer.parseInt(messageTokens[7]);
+			int g = Integer.parseInt(messageTokens[8]);
+			int b = Integer.parseInt(messageTokens[9]);
+			Ghost gh = new Ghost(x,y,z);
+			Tank t = gh.getNode();
 			t.setTopRotation(top);
 			t.setTurretPitch(tur);
-			ghosts.put(ghostID, g);
-			game.addObject(g.getNode());
+			t.setColor(new Color(r,g,b));
+			ghosts.put(ghostID, gh);
+			game.addObject(gh.getNode());
 		}
 		if(messageTokens[0].compareTo("move") == 0) {
 			UUID ghostID = UUID.fromString(messageTokens[1]);
