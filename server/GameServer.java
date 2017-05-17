@@ -37,6 +37,8 @@ public class GameServer extends GameConnectionServer<UUID> {
 		private float desiredBearing;
 		private float desiredPitch;
 
+		public UUID getID() { return id; }
+
 		public String[] getPosStrings() {
 			return new String[] {
 				((Float)x).toString(),
@@ -47,6 +49,10 @@ public class GameServer extends GameConnectionServer<UUID> {
 				"255","255","255"
 			};
 
+		}
+
+		public void hitAt(Vector3D v) {
+			//TODO adjust power
 		}
 
 		public AITank(GameServer g){
@@ -134,6 +140,10 @@ public class GameServer extends GameConnectionServer<UUID> {
 			timeSinceTargetChange += elapsedTime;
 		}
 
+		public void fire() {
+			sendFireMessage();
+		}
+
 		public void sendFireMessage() {
 			Vector3D[] posVel = getFirePosAndVel();
 			server.sendFireMessages(id, new String[]{
@@ -168,7 +178,12 @@ public class GameServer extends GameConnectionServer<UUID> {
 	private int mapSeed;
 	private HashMap<UUID, Long> timeSincePing;
 	private HashMap<UUID, Point3D> positions;
-	private ArrayList<AITank> aitanks;
+	private HashMap<UUID, AITank> aitanks;
+
+	private Vector<UUID> turnOrder;
+	private UUID curPlayer;
+
+	private HashMap<UUID, Vector3D> booms;
 
 	private TerrainBlock terrain;
 	public TerrainBlock getTerrain() {return terrain;}
@@ -233,13 +248,18 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 	public void firstPlayer(UUID clientID) {
 		System.out.println("First player joined");
-		aitanks = new ArrayList<AITank>();
-		aitanks.add(new AITank(this));
-		aitanks.add(new AITank(this));
-		aitanks.add(new AITank(this));
-		aitanks.add(new AITank(this));
-		aitanks.add(new AITank(this));
-		aitanks.add(new AITank(this));
+		aitanks = new HashMap<UUID, AITank>();
+		addAITank();
+		addAITank();
+		addAITank();
+		addAITank();
+		addAITank();
+		addAITank();
+	}
+
+	public void addAITank() {
+		AITank t = new AITank(this);
+		aitanks.put(t.getID(), t);
 	}
 
 	public void loop() {
@@ -256,9 +276,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 			//Drop clients that haven't sent a ping in 5 seconds
 			for(UUID clientID : remove) {
-				sendByeMessages(clientID);
-				removeClient(clientID);
-				timeSincePing.remove(clientID);
+				dropPlayer(clientID);
 				System.out.println("Removed client " + clientID + " due to inactivity.");
 			}
 
@@ -267,7 +285,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			}
 
 			if(aitanks != null)
-				for(AITank ai : aitanks)
+				for(AITank ai : aitanks.values())
 					ai.update(100); // Just assume 100ms
 
 			try{
@@ -282,6 +300,57 @@ public class GameServer extends GameConnectionServer<UUID> {
 		super(localPort, ProtocolType.TCP);
 		positions = new HashMap<UUID, Point3D>();
 		timeSincePing = new HashMap<UUID, Long>();
+		turnOrder = new Vector<UUID>();
+		booms = new HashMap<UUID, Vector3D>();
+		curPlayer = null;
+	}
+
+	public void AddBoom(UUID source, Vector3D loc) {
+		booms.put(source, loc);
+		if(booms.keySet().size() >= timeSincePing.keySet().size()) nextTurn();
+	}
+
+	public void dropPlayer(UUID id) {
+		sendByeMessages(id);
+		timeSincePing.remove(id);
+		removeClient(id);
+		if(booms.containsKey(id)) booms.remove(id);
+		if(booms.keySet().size() >= timeSincePing.keySet().size()) nextTurn();
+		else if(curPlayer == id) nextTurn();
+	}
+
+	public void nextTurn() {
+		if(curPlayer != null && aitanks.containsKey(curPlayer)) {
+			//AI tank so calculate roughly where explosion happened.
+			float x = 0;
+			float y = 0;
+			float z = 0;
+
+			for(Vector3D v : booms.values()){
+				x += v.getX();
+				y += v.getY();
+				z += v.getZ();
+			}
+
+			x /= booms.size();
+			y /= booms.size();
+			z /= booms.size();
+
+			aitanks.get(curPlayer).hitAt(new Vector3D(x,y,z));
+		}
+
+		if(curPlayer == null)
+			curPlayer = turnOrder.get(0);
+		else{
+			int ind = turnOrder.indexOf(curPlayer);
+			ind++;
+			ind %= turnOrder.size();
+			curPlayer = turnOrder.get(ind);
+		}
+
+		sendTurnMessage(curPlayer);
+		if(aitanks.containsKey(curPlayer))
+			aitanks.get(curPlayer).fire();
 	}
 
 	public void acceptClient(IClientInfo ci, Object o) {
@@ -310,8 +379,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			if(msgTokens[0].compareTo("bye") == 0) {
 				//format: bye,localid
 				UUID clientID = UUID.fromString(msgTokens[1]);
-				sendByeMessages(clientID);
-				removeClient(clientID);
+				dropPlayer(clientID);
 			}
 
 			if(msgTokens[0].compareTo("hi") == 0) {
@@ -327,7 +395,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 				UUID clientID = UUID.fromString(msgTokens[1]);
 				String[] pos = {msgTokens[2], msgTokens[3], msgTokens[4], msgTokens[5], msgTokens[6], msgTokens[7], msgTokens[8], msgTokens[9]};
 				sendCreateMessages(clientID, pos);
-				for(AITank ai : aitanks){
+				for(AITank ai : aitanks.values()){
 					ai.sendHiMessage(clientID);
 				}
 				sendMapSeed();
@@ -355,6 +423,20 @@ public class GameServer extends GameConnectionServer<UUID> {
 				//format: ping,localid,x
 				UUID clientID = UUID.fromString(msgTokens[1]);
 				timeSincePing.put(clientID, getTime());
+			}
+
+			if(msgTokens[0].compareTo("boom") == 0) {
+				//format: ping,localid,x,y,z
+
+				UUID clientID = UUID.fromString(msgTokens[2]);
+				float x = Float.parseFloat(msgTokens[2]);
+				float y = Float.parseFloat(msgTokens[3]);
+				float z = Float.parseFloat(msgTokens[4]);
+			}
+
+			if(msgTokens[0].compareTo("dead") == 0) {
+				//format: ping,localid,deadid
+				UUID deadID = UUID.fromString(msgTokens[2]);
 			}
 		}
 	}
@@ -455,6 +537,17 @@ public class GameServer extends GameConnectionServer<UUID> {
 	public void sendMapSeed() {
 		try {
 			String message = new String("map," + mapSeed);
+			System.out.println(message);
+			sendPacketToAll(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void sendTurnMessage(UUID who) {
+		try {
+			String message = new String("turn," + who.toString());
 			System.out.println(message);
 			sendPacketToAll(message);
 		} catch (IOException e) {
