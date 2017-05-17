@@ -103,6 +103,7 @@ public class GameClient extends GameConnectionClient {
 			int newseed = Integer.parseInt(messageTokens[1]);
 			Starter.getInst().setupTerrain(newseed);
 			Starter.getInst().setupTrees();
+			Starter.getInst().setupHouses();
 		}
 	}
 

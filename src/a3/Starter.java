@@ -80,6 +80,7 @@ public class Starter extends BaseGame {
 	private ArrayList<Line> firePredict;
 	private ArrayList<Line> firePredictShadow;
 	private Texture treeTexture;
+	private Texture houseTexture;
 	private IAudioManager audioManager;
 	private AudioResource shotSound, boomSound;
 	private ArrayList<Sound> runningSounds;
@@ -145,6 +146,43 @@ public class Starter extends BaseGame {
 		}
 		tree.setLocalTranslation(mat);
 		scale.scale(s,s,s);
+
+		addGameWorldObject(tree);
+
+	}
+
+	public void setupHouses() {
+
+		//Add trees
+		houseTexture = TextureManager.loadTexture2D("house.png");
+		for(int i = 0; i < 10; i++) 
+			addRandomHouse();
+
+	}
+
+	private void addRandomHouse() {
+
+		OBJLoader loader = new OBJLoader();
+		TriMesh tree = loader.loadModel("house.obj");
+		tree.setTexture(houseTexture);
+		float s = 1.25f;
+		float x = (float)(Math.random() * 128);
+		float z = (float)(Math.random() * 128);
+		float r = (float)(Math.random() * 360);
+
+		Matrix3D scale = tree.getLocalScale();
+		Matrix3D mat = new Matrix3D();
+		Matrix3D rot = tree.getLocalRotation();
+		TerrainBlock tb = getTerrain();
+		int dim = tb.getSize();
+		if(x >= 0 && x < dim - 1 && z >= 0 && z < dim - 1){
+			mat.translate(x,
+				tb.getHeight(x,z) - 1.5,
+				z);
+		}
+		tree.setLocalTranslation(mat);
+		scale.scale(s,s,s);
+		rot.rotateY(r);
 
 		addGameWorldObject(tree);
 
