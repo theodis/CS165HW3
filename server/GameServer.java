@@ -132,7 +132,6 @@ public class GameServer extends GameConnectionServer<UUID> {
 				pitch += deltaPitch;
 				sendMoveMessage();
 			} else if(timeSinceLastShot > 5000) {
-				System.out.println("Firing");
 				sendFireMessage();
 				timeSinceLastShot = -1 * (r.nextInt() % 2000);
 			}
@@ -315,7 +314,6 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 	public void addBoom(UUID source, Vector3D loc) {
 		booms.put(source, loc);
-		System.out.println("Added boom: " + booms.size() + " " + timeSincePing.size());
 		if(booms.size() >= timeSincePing.size()) nextTurn();
 	}
 

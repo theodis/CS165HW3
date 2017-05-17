@@ -132,6 +132,8 @@ public class Starter extends BaseGame implements IEventListener {
 		return false;
 	}
 
+	public ArrayList<Bomb> getBombs() { return bombs; }
+
 	public void addBomb(Tank s, Vector3D pos, Vector3D vel) {
 		playShot(new Point3D(pos));
 		Bomb b = new Bomb(s,pos,vel);
