@@ -16,9 +16,13 @@ public class Tank extends Group implements IEventListener {
 	public Cube top;
 	public Cylinder turret;
 
-	public float topRotation = 0.0f;
-	public float turretPitch = 0.0f;
-	public float shootPower = 15.0f;
+	private float topRotation = 0.0f;
+	private float turretPitch = 0.0f;
+	private float shootPower = 15.0f;
+
+	private boolean dead = false;
+
+	public boolean isDead() { return dead; }
 
 	public Tank() {
 		topGroup = new Group();
@@ -181,9 +185,11 @@ public class Tank extends Group implements IEventListener {
 	}
 
 	public void fire() {
-		Vector3D[] posAndVel = getFirePosAndVel();
-		Starter.getInst().addBomb(this,posAndVel[0],posAndVel[1]);
-		Starter.getInst().getClient().sendFireMessage(posAndVel[0],posAndVel[1]);
+		if(!dead){
+			Vector3D[] posAndVel = getFirePosAndVel();
+			Starter.getInst().addBomb(this,posAndVel[0],posAndVel[1]);
+			Starter.getInst().getClient().sendFireMessage(posAndVel[0],posAndVel[1]);
+		}
 	}
 	
 	public boolean handleEvent(IGameEvent event) {
@@ -197,10 +203,7 @@ public class Tank extends Group implements IEventListener {
 				//Boom!
 				Starter.getInst().getEventManager().triggerEvent(new TankDestroyedEvent(ee.getSource(), this));
 				Starter.getInst().removeObject(this);
-
-				if(Starter.getInst().getPlayer().getSceneNode() == this){
-					Starter.getInst().getPlayer().Died();
-				}
+				dead = true;
 			}			
 			return true;
 		}
