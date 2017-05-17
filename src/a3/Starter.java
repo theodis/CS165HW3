@@ -75,6 +75,8 @@ public class Starter extends BaseGame implements IEventListener {
 	private TerrainBlock terrain;
 	private SkyBox sky;
 	private GameClient client;
+	private ArrayList<Explosion> explosions;
+	private ArrayList<Explosion> removeExplosions;
 	private ArrayList<Bomb> bombs;
 	private ArrayList<Bomb> removeBombs;
 	private ArrayList<Line> firePredict;
@@ -101,6 +103,9 @@ public class Starter extends BaseGame implements IEventListener {
 		if(event instanceof ExplosionEvent) {
 			ExplosionEvent ee = (ExplosionEvent)event;
 			Vector3D ePos = ee.getOrigin();
+			Explosion e = new Explosion(ePos, ee.getRadius());
+			explosions.add(e);
+			addGameWorldObject(e);
 			playBoom(new Point3D(ePos));
 			return true;
 		}
@@ -114,6 +119,14 @@ public class Starter extends BaseGame implements IEventListener {
 			if(source != destroyed && player.getSceneNode() == source){
 				player.addPoint();
 			}
+			return true;
+		}
+		if(event instanceof Explosion.RemoveExplosionEvent) {
+			System.out.println("Removed explosion");
+			Explosion.RemoveExplosionEvent ee = (Explosion.RemoveExplosionEvent)event;
+			removeExplosions.add(ee.getSource());
+			removeGameWorldObject(ee.getSource());
+			return true;
 		}
 		return false;
 	}
@@ -294,6 +307,7 @@ public class Starter extends BaseGame implements IEventListener {
 		//Listen for explosions and tank destroyed
 		event.addListener(this, ExplosionEvent.class);
 		event.addListener(this, TankDestroyedEvent.class);
+		event.addListener(this, Explosion.RemoveExplosionEvent.class);
 
 		//Setup player
 		player = new Player();
@@ -321,6 +335,8 @@ public class Starter extends BaseGame implements IEventListener {
 		//Setup bomb stuff
 		bombs = new ArrayList<Bomb>();
 		removeBombs = new ArrayList<Bomb>();
+		explosions = new ArrayList<Explosion>();
+		removeExplosions = new ArrayList<Explosion>();
 
 		//Audio initialization
 		runningSounds = new ArrayList<Sound>();
@@ -463,11 +479,16 @@ public class Starter extends BaseGame implements IEventListener {
 			bombs.remove(b);
 			Tank source = b.getSource();
 			Vector3D origin = b.getWorldTranslation().getCol(3);
-			float radius = 10.0f;
+			float radius = 5.0f;
 			event.triggerEvent(new ExplosionEvent(source,origin,radius));
 		}
 		removeBombs.clear();
 
+		for(Explosion e : removeExplosions)
+			explosions.remove(e);
+		removeExplosions.clear();
+		for(Explosion e : explosions)
+			e.update(elapsedTime);
 		for(Bomb b : bombs)
 			b.update(elapsedTime);
 

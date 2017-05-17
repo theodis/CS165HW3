@@ -41,7 +41,6 @@ public class Bomb extends Sphere {
 		TerrainBlock tb = Starter.getInst().getTerrain();
 		float ty = tb.getHeight((float)position.getX(), (float)position.getZ()) - 2;
 		if(position.getY() < ty){
-			//TODO Handle boom
 			Starter.getInst().removeBomb(this);
 		}
 		
