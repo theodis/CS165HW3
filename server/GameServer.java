@@ -307,7 +307,11 @@ public class GameServer extends GameConnectionServer<UUID> {
 		curPlayer = null;
 	}
 
-	public void AddBoom(UUID source, Vector3D loc) {
+	public void tankDied(UUID id) {
+
+	}
+
+	public void addBoom(UUID source, Vector3D loc) {
 		booms.put(source, loc);
 		System.out.println("Added boom: " + booms.size() + " " + timeSincePing.size());
 		if(booms.size() >= timeSincePing.size()) nextTurn();
@@ -437,11 +441,15 @@ public class GameServer extends GameConnectionServer<UUID> {
 				float x = Float.parseFloat(msgTokens[2]);
 				float y = Float.parseFloat(msgTokens[3]);
 				float z = Float.parseFloat(msgTokens[4]);
+
+				addBoom(clientID, new Vector3D(x,y,z));
 			}
 
 			if(msgTokens[0].compareTo("dead") == 0) {
 				//format: dead,localid,deadid
 				UUID deadID = UUID.fromString(msgTokens[2]);
+
+				tankDied(deadID);
 			}
 		}
 	}
