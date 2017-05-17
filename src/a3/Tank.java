@@ -3,10 +3,11 @@ package a3;
 import graphicslib3D.*;
 import sage.scene.*;
 import sage.scene.shape.*;
+import sage.event.*;
 import java.util.*;
 import java.awt.Color;
 
-public class Tank extends Group {
+public class Tank extends Group implements IEventListener {
 
 	public Group topGroup;
 	public Group turretGroup;
@@ -54,6 +55,8 @@ public class Tank extends Group {
 		addChild(topGroup);
 
 		scale(0.2f,0.2f,0.2f);
+		
+		Starter.getInst().getEventManager().addListener(this, ExplosionEvent.class);
 	}
 
 	private Vector<SceneNode> getChildRecursive(Group g) {
@@ -175,7 +178,25 @@ public class Tank extends Group {
 
 	public void fire() {
 		Vector3D[] posAndVel = getFirePosAndVel();
-		Starter.getInst().addBomb(posAndVel[0],posAndVel[1]);
+		Starter.getInst().addBomb(this,posAndVel[0],posAndVel[1]);
 		Starter.getInst().getClient().sendFireMessage(posAndVel[0],posAndVel[1]);
+	}
+	
+	public boolean handleEvent(IGameEvent event) {
+
+		if(event instanceof ExplosionEvent) {
+			ExplosionEvent ee = (ExplosionEvent)event;
+			Vector3D myPos = getWorldTranslation().getCol(3);
+			Vector3D ePos = ee.getOrigin();
+			float dist = (float)myPos.minus(ePos).magnitude();
+			if(dist < ee.getRadius()){
+				//Boom!
+				Starter.getInst().getEventManager().triggerEvent(new TankDestroyedEvent(ee.getSource(), this));
+				Starter.getInst().removeObject(this);
+			}			
+			return true;
+		}
+		
+		return false;
 	}
 }

@@ -79,14 +79,7 @@ public class Player {
 		//Bind camera inputs
 		for(net.java.games.input.Controller c : input.getControllers()){
 			if(c.getType() == net.java.games.input.Controller.Type.GAMEPAD){
-				input.associateAction(c, Identifier.Axis.Z, 
-					new AbstractInputAction(){public void performAction(float time, Event event) {
-						playerNode.adjustPower( (event.getValue() + 1.0f) * time / 250);
-					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-				input.associateAction(c, Identifier.Axis.RZ, 
-					new AbstractInputAction(){public void performAction(float time, Event event) {
-						playerNode.adjustPower( -1 * (event.getValue() + 1.0f) * time / 250);
-					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+				//RX and RY work in both windows and linux
 				input.associateAction(c, Identifier.Axis.RX, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						cameraController.Rotate(-1 * event.getValue() * time / 1000);
@@ -95,22 +88,30 @@ public class Player {
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						cameraController.Pitch(event.getValue() * time / 1000);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-				input.associateAction(c, Identifier.Button._1, 
-					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.adjustRadius(time / 40);
-					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-				input.associateAction(c, Identifier.Button._2, 
-					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.adjustRadius(time / -40);
-					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-				input.associateAction(c, Identifier.Button.A, 
-					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.adjustRadius(time / 40);
-					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-				input.associateAction(c, Identifier.Button.B, 
-					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.adjustRadius(time / -40);
-					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+				
+				//Handle windows mappings
+				if(OSValidator.isWindows()){
+					input.associateAction(c, Identifier.Button._0, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							cameraController.adjustRadius(time / 40);
+						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+					input.associateAction(c, Identifier.Button._1, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							cameraController.adjustRadius(time / -40);
+						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+				}
+				
+				//Handle linux mappings
+				if(OSValidator.isUnix()){
+					input.associateAction(c, Identifier.Button.A, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							cameraController.adjustRadius(time / 40);
+						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+					input.associateAction(c, Identifier.Button.B, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							cameraController.adjustRadius(time / -40);
+						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+				}
 			}
 /*			if(c.getType() == net.java.games.input.Controller.Type.MOUSE){
 				input.associateAction(c, Identifier.Axis.X, 
@@ -132,30 +133,58 @@ public class Player {
 		//Bind turret controls
 		for(net.java.games.input.Controller c : input.getControllers()){
 			if(c.getType() == net.java.games.input.Controller.Type.GAMEPAD){
+				//X and Y axis thankfully work the same across platforms
 				input.associateAction(c, Identifier.Axis.X, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						playerNode.rotateTop(-1 * event.getValue() * time / 10);
+						Starter.getInst().renewPrediction();
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				input.associateAction(c, Identifier.Axis.Y, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
 						playerNode.pitchTurret(event.getValue() * -time / 10);
+						Starter.getInst().renewPrediction();
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-				input.associateAction(c, Identifier.Button.X, 
-					new AbstractInputAction(){public void performAction(float time, Event event) {
-						playerNode.fire();
-					}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-				input.associateAction(c, Identifier.Button._3, 
-					new AbstractInputAction(){public void performAction(float time, Event event) {
-						playerNode.fire();
-					}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-				/*input.associateAction(c, Identifier.Button._1, 
-					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.adjustRadius(time / 40);
-					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-				input.associateAction(c, Identifier.Button._2, 
-					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.adjustRadius(time / -40);
-					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);*/
+
+				//Handle linux mappings
+				if(OSValidator.isUnix()){
+					input.associateAction(c, Identifier.Axis.Z, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							playerNode.adjustPower( (event.getValue() + 1.0f) * time / 250);
+							Starter.getInst().renewPrediction();
+						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+					input.associateAction(c, Identifier.Axis.RZ, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							playerNode.adjustPower( -1 * (event.getValue() + 1.0f) * time / 250);
+							Starter.getInst().renewPrediction();
+						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+					input.associateAction(c, Identifier.Button.X, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							playerNode.fire();
+						}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+					input.associateAction(c, Identifier.Button.BACK, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							Starter.getInst().setGameOver(true);
+						}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);				}
+				
+				//Handle windows mappings
+				if(OSValidator.isWindows()){
+					//Z axis in windows is for both triggers
+					//Left trigger ranges 0 to 1
+					//Right trigger ranges 0 to -1
+					input.associateAction(c, Identifier.Axis.Z, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							playerNode.adjustPower( event.getValue() * time / 250);
+							Starter.getInst().renewPrediction();
+						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+					input.associateAction(c, Identifier.Button._2, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							playerNode.fire();
+						}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+					input.associateAction(c, Identifier.Button._6, 
+						new AbstractInputAction(){public void performAction(float time, Event event) {
+							Starter.getInst().setGameOver(true);
+						}}, IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+				}
 			}
 			/*if(c.getType() == net.java.games.input.Controller.Type.MOUSE){
 				input.associateAction(c, Identifier.Axis.X, 

@@ -92,9 +92,11 @@ public class Starter extends BaseGame {
 	public Player getPlayer() { return player; }
 	public GameClient getClient() { return client; }
 
-	public void addBomb(Vector3D pos, Vector3D vel) {
+	public IEventManager getEventManager() { return event; }
+
+	public void addBomb(Tank s, Vector3D pos, Vector3D vel) {
 		playShot(new Point3D(pos));
-		Bomb b = new Bomb(pos,vel);
+		Bomb b = new Bomb(s,pos,vel);
 		bombs.add(b);
 		addGameWorldObject(b);
 	}
@@ -118,7 +120,7 @@ public class Starter extends BaseGame {
 
 		//Add trees
 		treeTexture = TextureManager.loadTexture2D("tree.png");
-		for(int i = 0; i < 100; i++) 
+		for(int i = 0; i < 10; i++) 
 			addRandomTree();
 
 	}
@@ -194,9 +196,6 @@ public class Starter extends BaseGame {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-
-		firePredict = new ArrayList<Line>();
-		firePredictShadow = new ArrayList<Line>();
 
 		//Axis set up
 		Point3D origin = new Point3D(0,0,0);
@@ -344,33 +343,24 @@ public class Starter extends BaseGame {
 		return ret;
 	}
 
-	public void update(float elapsedTime) {
-
-		if(client != null)
-			client.update(elapsedTime);
-		player.update(elapsedTime);
-		if(sky != null && player != null && player.getSceneNode() != null) {
-			Point3D loc = player.getCamera().getLocation();
-			Matrix3D mat = new Matrix3D();
-			mat.translate(loc.getX(), 490, loc.getZ());
-			sky.setLocalTranslation(mat);
-		}
-
-		for(Bomb b : removeBombs)
-			bombs.remove(b);
-		removeBombs.clear();
-
-		for(Bomb b : bombs)
-			b.update(elapsedTime);
-
-		//Show fire prediction
+	public void clearPrediction() {
 		for(Line l : firePredict)
 			removeGameWorldObject(l);
 		firePredict.clear();
 		for(Line l : firePredictShadow)
 			removeGameWorldObject(l);
 		firePredictShadow.clear();
-
+		
+		firePredict = null;
+		firePredictShadow = null;
+	}
+	
+	public void renewPrediction() {
+		if(firePredict != null) clearPrediction(); // Clear old prediction if it exists
+		firePredict = new ArrayList<Line>();
+		firePredictShadow = new ArrayList<Line>();
+		
+		//Show fire prediction
 		Point3D[] points = getPlayer().getSceneNode().predictPath((int)(getPlayer().getSceneNode().getShootPower() / 12) + 10 ,100);
 		for(int i = 0; i < points.length - 1; i++){
 			Point3D shadowA = new Point3D(
@@ -390,6 +380,31 @@ public class Starter extends BaseGame {
 			addGameWorldObject(l);
 		for(Line l : firePredictShadow)
 			addGameWorldObject(l);
+	}
+	
+	public void update(float elapsedTime) {
+
+		if(client != null)
+			client.update(elapsedTime);
+		player.update(elapsedTime);
+		if(sky != null && player != null && player.getSceneNode() != null) {
+			Point3D loc = player.getCamera().getLocation();
+			Matrix3D mat = new Matrix3D();
+			mat.translate(loc.getX(), 490, loc.getZ());
+			sky.setLocalTranslation(mat);
+		}
+
+		for(Bomb b : removeBombs){
+			bombs.remove(b);
+			Tank source = b.getSource();
+			Vector3D origin = b.getWorldTranslation().getCol(3);
+			float radius = 10.0f;
+			event.triggerEvent(new ExplosionEvent(source,origin,radius));
+		}
+		removeBombs.clear();
+
+		for(Bomb b : bombs)
+			b.update(elapsedTime);
 
 		time += elapsedTime;
 
@@ -408,7 +423,7 @@ public class Starter extends BaseGame {
 		
 		return ret;
 	}
-
+	
 	protected void shutdown() {
 		display.close();
 	}

@@ -96,7 +96,7 @@ public class GameClient extends GameConnectionClient {
 			float vy = Float.parseFloat(messageTokens[6]);
 			float vz = Float.parseFloat(messageTokens[7]);
 			if(ghosts.containsKey(ghostID)){
-				game.addBomb(new Vector3D(px,py,pz), new Vector3D(vx,vy,vz));
+				game.addBomb(ghosts.get(ghostID).getNode(), new Vector3D(px,py,pz), new Vector3D(vx,vy,vz));
 			}
 		}
 		if(messageTokens[0].compareTo("map") == 0) {

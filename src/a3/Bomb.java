@@ -9,11 +9,15 @@ import sage.terrain.*;
 public class Bomb extends Sphere {
 	public Vector3D velocity;
 	public Vector3D position;
+	public Tank source;
 
-	public Bomb(Vector3D initialPosition, Vector3D initialVelocity) {
+	public Tank getSource() {return source;}
+	
+	public Bomb(Tank s, Vector3D initialPosition, Vector3D initialVelocity) {
 		this.setColor(Color.BLACK);
 		velocity = initialVelocity;
 		position = initialPosition;
+		source = s;
 
 		Matrix3D scale = getLocalScale();
 		scale.scale(0.03f,0.03f,0.03f);
