@@ -308,7 +308,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 	}
 
 	public void tankDied(UUID id) {
-
+		if(aitanks.containsKey(id)) aitanks.remove(id);
+		if(turnOrder.contains(id)) turnOrder.remove(id);
+		if(curPlayer == id) curPlayer = null;
 	}
 
 	public void addBoom(UUID source, Vector3D loc) {
