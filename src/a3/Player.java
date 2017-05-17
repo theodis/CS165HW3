@@ -38,6 +38,8 @@ public class Player {
 		return new Color(r.floatValue(),g.floatValue(),b.floatValue());
 	}
 
+	public void addPoint() {score++;}
+
 	public Player() {
 
 		IRenderer renderer = Starter.getInst().getDisplaySystem().getRenderer();

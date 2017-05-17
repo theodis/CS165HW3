@@ -31,7 +31,7 @@ import sage.model.loader.OBJLoader;
 import sage.audio.*;
 import com.jogamp.openal.ALFactory;
 
-public class Starter extends BaseGame {
+public class Starter extends BaseGame implements IEventListener {
 
 	public enum CameraAction {
 		MOVE_FORWARD,
@@ -86,6 +86,7 @@ public class Starter extends BaseGame {
 	private ArrayList<Sound> runningSounds;
 
 	private int mapSeed;
+	private int score;
 
 	public int getMapSeed() { return mapSeed; }
 	public HillHeightMap getHills() { return hills; }
@@ -94,6 +95,28 @@ public class Starter extends BaseGame {
 	public GameClient getClient() { return client; }
 
 	public IEventManager getEventManager() { return event; }
+
+	public boolean handleEvent(IGameEvent event) {
+
+		if(event instanceof ExplosionEvent) {
+			ExplosionEvent ee = (ExplosionEvent)event;
+			Vector3D ePos = ee.getOrigin();
+			playBoom(new Point3D(ePos));
+			return true;
+		}
+		if(event instanceof TankDestroyedEvent) {
+			TankDestroyedEvent tde = (TankDestroyedEvent)event;
+			Tank source = tde.getSource();
+			Tank destroyed = tde.getDestroyed();
+
+			//Award points if source is the players tank and
+			//the destroyed tank isn't also the player
+			if(source != destroyed && player.getSceneNode() == source){
+				player.addPoint();
+			}
+		}
+		return false;
+	}
 
 	public void addBomb(Tank s, Vector3D pos, Vector3D vel) {
 		playShot(new Point3D(pos));
@@ -219,7 +242,7 @@ public class Starter extends BaseGame {
 	}
 
 	public void initGame() {
-
+		score = 0;
 		time = 0;
 
 		display = getDisplaySystem();
@@ -267,6 +290,10 @@ public class Starter extends BaseGame {
 
 		//Setup event manager
 		event = EventManager.getInstance();
+
+		//Listen for explosions and tank destroyed
+		event.addListener(this, ExplosionEvent.class);
+		event.addListener(this, TankDestroyedEvent.class);
 
 		//Setup player
 		player = new Player();
