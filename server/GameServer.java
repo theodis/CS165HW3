@@ -309,7 +309,8 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 	public void AddBoom(UUID source, Vector3D loc) {
 		booms.put(source, loc);
-		if(booms.keySet().size() >= timeSincePing.keySet().size()) nextTurn();
+		System.out.println("Added boom: " + booms.size() + " " + timeSincePing.size());
+		if(booms.size() >= timeSincePing.size()) nextTurn();
 	}
 
 	public void dropPlayer(UUID id) {
