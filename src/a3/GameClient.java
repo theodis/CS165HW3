@@ -196,6 +196,39 @@ public class GameClient extends GameConnectionClient {
 
 	}
 
+	public void sendDeadMessage(Tank t) {
+		try {
+			String deadId = "";
+			if(Starter.getInst().getPlayer().getSceneNode() == t)
+				deadId = id.toString();
+			else{
+				for(UUID id : ghosts.keySet()){
+					if(ghosts.get(id).getNode() == t){
+						deadId = id.toString();
+						break;
+					}
+				}
+			}
+			String message = new String("dead," + id.toString() + "," + deadId);
+			System.out.println(message);
+			sendPacket(message);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void sendExplodeMessage(Vector3D pos) {
+		try {
+			String message = new String("boom," + id.toString() + "," + pos.getX() + "," + pos.getY() + "," + pos.getZ());
+			System.out.println(message);
+			sendPacket(message);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public void update(float elapsed) {
 		processPackets();
 		if(connected){

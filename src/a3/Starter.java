@@ -107,12 +107,14 @@ public class Starter extends BaseGame implements IEventListener {
 			explosions.add(e);
 			addGameWorldObject(e);
 			playBoom(new Point3D(ePos));
+			client.sendExplodeMessage(ePos);
 			return true;
 		}
 		if(event instanceof TankDestroyedEvent) {
 			TankDestroyedEvent tde = (TankDestroyedEvent)event;
 			Tank source = tde.getSource();
 			Tank destroyed = tde.getDestroyed();
+			client.sendDeadMessage(destroyed);
 
 			//Award points if source is the players tank and
 			//the destroyed tank isn't also the player
@@ -122,7 +124,6 @@ public class Starter extends BaseGame implements IEventListener {
 			return true;
 		}
 		if(event instanceof Explosion.RemoveExplosionEvent) {
-			System.out.println("Removed explosion");
 			Explosion.RemoveExplosionEvent ee = (Explosion.RemoveExplosionEvent)event;
 			removeExplosions.add(ee.getSource());
 			removeGameWorldObject(ee.getSource());
