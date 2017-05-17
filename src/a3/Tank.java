@@ -21,6 +21,7 @@ public class Tank extends Group implements IEventListener {
 	private float shootPower = 15.0f;
 
 	private boolean dead = false;
+	private boolean fired = true;
 
 	public boolean isDead() { return dead; }
 
@@ -184,11 +185,16 @@ public class Tank extends Group implements IEventListener {
 		return ret;
 	}
 
+	public void turn() {
+		fired = false;
+	}
+
 	public void fire() {
-		if(!dead){
+		if(!fired && !dead){
 			Vector3D[] posAndVel = getFirePosAndVel();
 			Starter.getInst().addBomb(this,posAndVel[0],posAndVel[1]);
 			Starter.getInst().getClient().sendFireMessage(posAndVel[0],posAndVel[1]);
+			fired = true;
 		}
 	}
 	

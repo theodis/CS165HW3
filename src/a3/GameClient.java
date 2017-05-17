@@ -114,6 +114,10 @@ public class GameClient extends GameConnectionClient {
 			Starter.getInst().setupTrees();
 			Starter.getInst().setupHouses();
 		}
+		if(messageTokens[0].compareTo("turn") == 0) {
+			UUID turnID = UUID.fromString(messageTokens[1]);
+			if(turnID.equals(id)) Starter.getInst().getPlayer().getSceneNode().turn();
+		}
 	}
 
 	public String positionString() {

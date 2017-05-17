@@ -40,7 +40,7 @@ public class Bomb extends Sphere {
 		//See if it's time to remove
 		TerrainBlock tb = Starter.getInst().getTerrain();
 		float ty = tb.getHeight((float)position.getX(), (float)position.getZ()) - 2;
-		if(position.getY() < 0 || position.getY() < ty){
+		if(position.getY() < -5 || position.getY() < ty){
 			Starter.getInst().removeBomb(this);
 		}
 		
