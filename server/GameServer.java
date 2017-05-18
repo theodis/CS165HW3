@@ -24,6 +24,8 @@ public class GameServer extends GameConnectionServer<UUID> {
 		private float x;
 		private float y;
 		private float z;
+		private float high;
+		private float low;
 
 		private float lastBearing;
 		private float lastPitch;
@@ -52,7 +54,17 @@ public class GameServer extends GameConnectionServer<UUID> {
 		}
 
 		public void hitAt(Vector3D v) {
-			//TODO adjust power
+			Point3D source = server.getPositions().get(id);
+
+			Vector3D targetVec = vectorToTarget();
+			Vector3D boomVec = new Vector3D(v.getX() - source.getX(), v.getY() - source.getY(), v.getZ() - source.getZ());
+
+			if(targetVec.magnitude() > boomVec.magnitude())
+				//Target is further than the explosion
+				low = power;
+			else
+				high = power;
+			power = (low + high) / 2.0f;
 		}
 
 		public AITank(GameServer g){
@@ -76,7 +88,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			do{
 				int targetInd = Math.abs(r.nextInt()) % pos.size();
 				target = (UUID)pos.keySet().toArray()[targetInd];
-			}while(id != target);
+			}while(id == target);
 		}
 
 		private Vector3D[] getFirePosAndVel() { 
@@ -102,24 +114,28 @@ public class GameServer extends GameConnectionServer<UUID> {
 			return ret;
 		}
 
-		public void calculateBearing() {
+		public Vector3D vectorToTarget() {
 			Point3D source = server.getPositions().get(id);
 			Point3D dest = server.getPositions().get(target);
+			
+			return new Vector3D(dest.getX() - source.getX(), dest.getY() - source.getY(), dest.getZ() - source.getZ());
+		}
 
-			if(source == null || dest == null) return;
-
-			float dx = (float)(dest.getX() - source.getX());
-			float dz = (float)(dest.getY() - source.getY());
-			bearing = (float)(Math.atan2(dz,dx) * 180 / Math.PI);
-			pitch = 45.0f;
-			power = 15.0f;
+		public void calculateBearing() {
+			if(target == null) return;
+			Vector3D dir = vectorToTarget();
+			desiredBearing = 360 - (float)(Math.atan2(dir.getZ(),dir.getX()) * 180 / Math.PI);
+			desiredPitch = 45.0f;
+			high = 30.0f;
+			low = 6.0f;
+			power = (high + low) / 2.0f;
 		}
 
 		public void update(int elapsedTime) {
 			Random r = new Random();
 			float deltaBearing = desiredBearing - bearing;
 			float deltaPitch = desiredPitch - pitch;
-			if(desiredBearing == -1 || timeSinceTargetChange > 30000) {
+			if(target == null || !server.getPositions().containsKey(target) ) {
 				pickTarget();
 				calculateBearing();
 				timeSinceTargetChange = -1 * (r.nextInt() % 3000);
@@ -131,16 +147,13 @@ public class GameServer extends GameConnectionServer<UUID> {
 				bearing += deltaBearing;
 				pitch += deltaPitch;
 				sendMoveMessage();
-			} else if(timeSinceLastShot > 5000) {
-				sendFireMessage();
-				timeSinceLastShot = -1 * (r.nextInt() % 2000);
 			}
+
 			timeSinceLastShot += elapsedTime;
 			timeSinceTargetChange += elapsedTime;
 		}
 
 		public void fire() {
-			System.out.println(power + " " + bearing + " " + pitch);
 			sendFireMessage();
 		}
 
@@ -310,6 +323,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 	public void tankDied(UUID id) {
 		if(aitanks.containsKey(id)) aitanks.remove(id);
 		if(turnOrder.contains(id)) turnOrder.remove(id);
+		if(positions.containsKey(id)) positions.remove(id);
 		if(curPlayer == id) curPlayer = null;
 	}
 
