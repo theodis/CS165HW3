@@ -1,3 +1,7 @@
+fullscreen = false;
+width = 640;
+height = 480;
+
 //Black turret
 //r = 0.0
 //g = 0.0

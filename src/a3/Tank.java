@@ -189,6 +189,10 @@ public class Tank extends Group implements IEventListener {
 		fired = false;
 	}
 
+	public boolean isTurn() {
+		return fired == false;
+	}
+
 	public void fire() {
 		if(!fired && !dead){
 			Vector3D[] posAndVel = getFirePosAndVel();
