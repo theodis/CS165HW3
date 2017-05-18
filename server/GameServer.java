@@ -36,6 +36,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 		private int timeSinceTargetChange;
 		private int timeSinceLastShot;
+		private int r,g,b;
 		private float desiredBearing;
 		private float desiredPitch;
 
@@ -48,7 +49,9 @@ public class GameServer extends GameConnectionServer<UUID> {
 				((Float)z).toString(),
 				((Float)bearing).toString(),
 				((Float)pitch).toString(),
-				"255","255","255"
+				((Integer)(r)).toString(),
+				((Integer)(g)).toString(),
+				((Integer)(b)).toString()
 			};
 
 		}
@@ -67,13 +70,15 @@ public class GameServer extends GameConnectionServer<UUID> {
 			power = (low + high) / 2.0f;
 		}
 
-		public AITank(GameServer g){
-			server = g;
+		public AITank(GameServer gs){
+			server = gs;
 			id = UUID.randomUUID();
 			x = (float)Math.random() * 128;
 			z = (float)Math.random() * 128;
-			y = g.getHeightAt(x,z);
-
+			y = server.getHeightAt(x,z);
+			r = (int)(Math.random() * 255);
+			g = (int)(Math.random() * 255);
+			b = (int)(Math.random() * 255);
 			desiredBearing = -1;
 			desiredPitch = -1;
 			lastBearing = lastPitch = 0;
