@@ -24,6 +24,8 @@ public class Bomb extends Sphere {
 	}
 
 	public void update(float elapsedTime) {
+		Point3D start = new Point3D(position.getX(), position.getY(), position.getZ());
+
 		//Apply gravity
 		double y = velocity.getY();
 		y -= elapsedTime / 200.0f;
@@ -44,6 +46,8 @@ public class Bomb extends Sphere {
 			Starter.getInst().removeBomb(this);
 		}
 		
+		Point3D end = new Point3D(position.getX(), position.getY(), position.getZ());
+		Starter.getInst().addTrail(start,end,source.getColor());
 
 	}
 }

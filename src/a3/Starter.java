@@ -81,6 +81,8 @@ public class Starter extends BaseGame implements IEventListener {
 	private ArrayList<Bomb> removeBombs;
 	private ArrayList<Line> firePredict;
 	private ArrayList<Line> firePredictShadow;
+	private ArrayList<Trail> trails;
+	private ArrayList<Trail> removeTrails;
 	private Texture treeTexture;
 	private Texture houseTexture;
 	private IAudioManager audioManager;
@@ -340,6 +342,8 @@ public class Starter extends BaseGame implements IEventListener {
 		removeBombs = new ArrayList<Bomb>();
 		explosions = new ArrayList<Explosion>();
 		removeExplosions = new ArrayList<Explosion>();
+		trails = new ArrayList<Trail>();
+		removeTrails = new ArrayList<Trail>();
 
 		//Audio initialization
 		runningSounds = new ArrayList<Sound>();
@@ -467,6 +471,14 @@ public class Starter extends BaseGame implements IEventListener {
 			addGameWorldObject(l);
 	}
 	
+	public void addTrail(Point3D a, Point3D b, Color c){
+		System.out.println(a);
+		System.out.println(b);
+		Trail t = new Trail(a,b,c);
+		addGameWorldObject(t);
+		trails.add(t);
+	}
+
 	public void update(float elapsedTime) {
 
 		if(client != null)
@@ -491,10 +503,22 @@ public class Starter extends BaseGame implements IEventListener {
 		for(Explosion e : removeExplosions)
 			explosions.remove(e);
 		removeExplosions.clear();
+
+		for(Trail t : removeTrails)
+			trails.remove(t);
+		removeTrails.clear();
+
 		for(Explosion e : explosions)
 			e.update(elapsedTime);
 		for(Bomb b : bombs)
 			b.update(elapsedTime);
+		for(Trail t : trails){
+			t.update(elapsedTime);
+			if(t.getTime() > t.getMax()){
+				removeTrails.add(t);
+				removeGameWorldObject(t);
+			}
+		}
 
 		time += elapsedTime;
 
