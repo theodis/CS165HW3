@@ -290,7 +290,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 
 			ArrayList<UUID> remove = new ArrayList<UUID>();
 			long curTime = getTime();
-			for(UUID clientID : timeSincePing.keySet())
+			/*for(UUID clientID : timeSincePing.keySet())
 				if(getTime() - timeSincePing.get(clientID) > 3000)
 					remove.add(clientID);
 
@@ -298,7 +298,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 			for(UUID clientID : remove) {
 				dropPlayer(clientID);
 				System.out.println("Removed client " + clientID + " due to inactivity.");
-			}
+			}*/
 
 			if(timeSincePing.size() == 0 && remove.size() > 0) {
 				resetGame();
@@ -348,6 +348,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 	}
 
 	public void nextTurn() {
+		booms.clear();
 		if(curPlayer != null && aitanks.containsKey(curPlayer)) {
 			//AI tank so calculate roughly where explosion happened.
 			float x = 0;
