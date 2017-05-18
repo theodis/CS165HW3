@@ -27,6 +27,7 @@ public class Player {
 	private HUDString pitchString;
 	private HUDString powerString;
 	private HUDString scoreString;
+	private HUDString yourTurnString;
 	private InputController inputController;
 
 	public Color getTankColor() {
@@ -71,16 +72,19 @@ public class Player {
 		pitchString = new HUDString ("Pitch = " + Math.round(playerNode.getTurretPitch() * 10) / 10);
 		powerString = new HUDString ("Power = " + Math.round(playerNode.getShootPower() * 10) / 10);
 		scoreString = new HUDString ("Score = " + score);
+		yourTurnString = new HUDString("");
 
 		bearingString.setLocation(0.01,0.16);
 		pitchString.setLocation(0.01,0.11);
 		powerString.setLocation(0.01,0.06);
 		scoreString.setLocation(0.01,0.01);
+		yourTurnString.setLocation(0.45, 0.9);
 
 		camera.addToHUD(bearingString);
 		camera.addToHUD(pitchString);
 		camera.addToHUD(powerString);
 		camera.addToHUD(scoreString);
+		camera.addToHUD(yourTurnString);
 
 		//Bind movement inputs
 		for(net.java.games.input.Controller c : input.getControllers()){
@@ -251,6 +255,12 @@ public class Player {
 		inputController.update(elapsedTime);
 		updateHeight();
 		cameraController.update(elapsedTime);
+
+		if(getSceneNode().isTurn()){
+			yourTurnString.setText("It's your turn!");
+		} else {
+			yourTurnString.setText("");
+		}
 	}
 
 	public ICamera getCamera() {

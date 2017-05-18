@@ -472,8 +472,6 @@ public class Starter extends BaseGame implements IEventListener {
 	}
 	
 	public void addTrail(Point3D a, Point3D b, Color c){
-		System.out.println(a);
-		System.out.println(b);
 		Trail t = new Trail(a,b,c);
 		addGameWorldObject(t);
 		trails.add(t);
