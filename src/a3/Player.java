@@ -39,7 +39,7 @@ public class Player {
 	public boolean isDead() { return getSceneNode().isDead(); }
 
 	public float deadZone(float val) {
-		if(Math.abs(val) < 0.05) return 0.0f;
+		if(Math.abs(val) < 0.15) return 0.0f;
 		return val;
 	}
 
