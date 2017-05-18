@@ -140,6 +140,7 @@ public class GameServer extends GameConnectionServer<UUID> {
 		}
 
 		public void fire() {
+			System.out.println(power + " " + bearing + " " + pitch);
 			sendFireMessage();
 		}
 
