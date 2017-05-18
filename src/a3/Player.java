@@ -31,17 +31,17 @@ public class Player {
 	private InputController inputController;
 
 	public Color getTankColor() {
-		JSEngine.getInst().execute("vars.js");
-		Double r = (Double)JSEngine.getInst().getEngine().get("r");
-		Double g = (Double)JSEngine.getInst().getEngine().get("g");
-		Double b = (Double)JSEngine.getInst().getEngine().get("b");
-
-		return new Color(r.floatValue(),g.floatValue(),b.floatValue());
+		return JSVars.getInst().getTankColor();
 	}
 
 	public void addPoint() {score++;}
 
 	public boolean isDead() { return getSceneNode().isDead(); }
+
+	public float deadZone(float val) {
+		if(Math.abs(val) < 0.05) return 0.0f;
+		return val;
+	}
 
 	public Player() {
 
@@ -100,11 +100,11 @@ public class Player {
 				//RX and RY work in both windows and linux
 				input.associateAction(c, Identifier.Axis.RX, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.Rotate(-1 * event.getValue() * time / 1000);
+						cameraController.Rotate(-1 * deadZone(event.getValue()) * time / 1000);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				input.associateAction(c, Identifier.Axis.RY, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.Pitch(event.getValue() * time / 1000);
+						cameraController.Pitch(deadZone(event.getValue()) * time / 1000);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				
 				//Handle windows mappings
@@ -134,15 +134,15 @@ public class Player {
 /*			if(c.getType() == net.java.games.input.Controller.Type.MOUSE){
 				input.associateAction(c, Identifier.Axis.X, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.Rotate(-1 * event.getValue() * time / 1000);
+						cameraController.Rotate(-1 * deadZone(event.getValue()) * time / 1000);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				input.associateAction(c, Identifier.Axis.Y, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.Pitch(event.getValue() * time / 1000);
+						cameraController.Pitch(deadZone(event.getValue()) * time / 1000);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				input.associateAction(c, Identifier.Axis.Z, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.adjustRadius(event.getValue() * time / 10);
+						cameraController.adjustRadius(deadZone(event.getValue()) * time / 10);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 
 			}*/
@@ -154,12 +154,12 @@ public class Player {
 				//X and Y axis thankfully work the same across platforms
 				input.associateAction(c, Identifier.Axis.X, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
-						playerNode.rotateTop(-1 * event.getValue() * time / 10);
+						playerNode.rotateTop(-1 * deadZone(event.getValue()) * time / 10);
 						Starter.getInst().renewPrediction();
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				input.associateAction(c, Identifier.Axis.Y, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
-						playerNode.pitchTurret(event.getValue() * -time / 10);
+						playerNode.pitchTurret(deadZone(event.getValue()) * -time / 10);
 						Starter.getInst().renewPrediction();
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 
@@ -167,12 +167,12 @@ public class Player {
 				if(OSValidator.isUnix()){
 					input.associateAction(c, Identifier.Axis.Z, 
 						new AbstractInputAction(){public void performAction(float time, Event event) {
-							playerNode.adjustPower( (event.getValue() + 1.0f) * time / 250);
+							playerNode.adjustPower( (deadZone(event.getValue()) + 1.0f) * time / 250);
 							Starter.getInst().renewPrediction();
 						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 					input.associateAction(c, Identifier.Axis.RZ, 
 						new AbstractInputAction(){public void performAction(float time, Event event) {
-							playerNode.adjustPower( -1 * (event.getValue() + 1.0f) * time / 250);
+							playerNode.adjustPower( -1 * (deadZone(event.getValue()) + 1.0f) * time / 250);
 							Starter.getInst().renewPrediction();
 						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 					input.associateAction(c, Identifier.Button.X, 
@@ -191,7 +191,7 @@ public class Player {
 					//Right trigger ranges 0 to -1
 					input.associateAction(c, Identifier.Axis.Z, 
 						new AbstractInputAction(){public void performAction(float time, Event event) {
-							playerNode.adjustPower( event.getValue() * time / 250);
+							playerNode.adjustPower( deadZone(event.getValue()) * time / 250);
 							Starter.getInst().renewPrediction();
 						}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 					input.associateAction(c, Identifier.Button._2, 
@@ -207,15 +207,15 @@ public class Player {
 			/*if(c.getType() == net.java.games.input.Controller.Type.MOUSE){
 				input.associateAction(c, Identifier.Axis.X, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.Rotate(-1 * event.getValue() * time / 1000);
+						cameraController.Rotate(-1 * deadZone(event.getValue()) * time / 1000);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				input.associateAction(c, Identifier.Axis.Y, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.Pitch(event.getValue() * time / 1000);
+						cameraController.Pitch(deadZone(event.getValue()) * time / 1000);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 				input.associateAction(c, Identifier.Axis.Z, 
 					new AbstractInputAction(){public void performAction(float time, Event event) {
-						cameraController.adjustRadius(event.getValue() * time / 10);
+						cameraController.adjustRadius(deadZone(event.getValue()) * time / 10);
 					}}, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 
 			}*/

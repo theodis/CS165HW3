@@ -238,7 +238,8 @@ public class Starter extends BaseGame implements IEventListener {
 	}
 
 	protected void createDisplay() {
-		IDisplaySystem display = (IDisplaySystem)new MyDisplaySystem(640,480,24,60,false,"sage.renderer.jogl.JOGLRenderer");
+		JSVars vars = JSVars.getInst();
+		IDisplaySystem display = (IDisplaySystem)new MyDisplaySystem(vars.getWidth(),vars.getHeight(),24,60,vars.getFullScreen(),"sage.renderer.jogl.JOGLRenderer");
 		System.out.print("\nWaiting for display creation...");
 		int count = 0;
 
@@ -371,7 +372,7 @@ public class Starter extends BaseGame implements IEventListener {
 		ret.setLocation(pos);
 		ret.setMaxDistance(1000.0f);
 		ret.setMinDistance(10.0f);
-		ret.setRollOff(2.0f);
+		ret.setRollOff(0.5f);
 		return ret;
 	}
 	private void playShot(Point3D loc){
