@@ -1,3 +1,5 @@
+// Code taken from https://stackoverflow.com/a/24861219
+
 package myGameEngine;
 
 public class OSValidator {

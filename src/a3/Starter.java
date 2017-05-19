@@ -265,7 +265,7 @@ public class Starter extends BaseGame implements IEventListener {
 		time = 0;
 
 		display = getDisplaySystem();
-		display.setTitle("Assignment #3");
+		display.setTitle("Tanks");
 
 		rand = new Random();
 		client = null;
